@@ -21,169 +21,170 @@
     }
   </style>
   <h1 class="text-center text-white px-4 py-5" id="page-title"><b><?php echo $_settings->info('name') ?></b></h1>
-<div class="login-box">
-  <!-- /.login-logo -->
-  <div class="card card-navy my-2">
-    <div class="card-body">
-      <p class="login-box-msg">Please enter your credentials</p>
-      <form id="login-frm" action="" method="post">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" name="username" autofocus placeholder="Username">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-user"></span>
+  
+  <div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-navy my-2">
+      <div class="card-body">
+        <p class="login-box-msg">Please essnter your credentials</p>
+        
+        <!-- Message display -->
+        <div id="login-message" class="text-center mb-3 text-danger"></div>
+        
+        <form id="login-frm" action="" method="post">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" name="username" autofocus placeholder="Username" id="username-input">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="password" class="form-control"  name="password" placeholder="Password">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
+          <div class="input-group mb-3">
+            <input type="password" class="form-control"  name="password" placeholder="Password" id="password-input">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
             </div>
           </div>
-        </div>
-
-<div id="login-error" class="text-danger text-sm mb-3" style="display: none;"></div>
-
-
-        <div class="row">
-          <div class="col-8">
-            <!-- <a href="< ?php echo base_url ?>">Go to Website</a> -->
+          <div class="row">
+            <div class="col-8">
+              <!-- <a href="< ?php echo base_url ?>">Go to Website</a> -->
+            </div>
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary btn-block" id="login-button">Sign In</button>
+            </div>
           </div>
-          <!-- /.col -->
-          <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-          </div>
-          <!-- /.col -->
-        </div>
-      </form>
-      <!-- /.social-auth-links -->
+        </form>
+        <!-- /.social-auth-links -->
 
-       <p class="mb-1">
-        <a href="forgot_password/index.php">I forgot my password</a>
-      </p> 
-      
-    </div>
-    <!-- /.card-body -->
-  </div>
-  <!-- /.card -->
-</div>
-<!-- /.login-box -->
-
-<!-- Stylish, Non-Dismissable Lockout Modal -->
-<div class="modal fade" id="lockoutModal" tabindex="-1" role="dialog"
-     aria-labelledby="lockoutModalLabel" aria-hidden="true"
-     data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content border-0 shadow-lg rounded-lg">
-      <div class="modal-header bg-danger text-white rounded-top">
-        <h5 class="modal-title w-100 text-center m-0" id="lockoutModalLabel">
-          <i class="fas fa-exclamation-triangle mr-2"></i>Too Many Attempts
-        </h5>
+        <p class="mb-1">
+          <a href="forgot_password/">I forgot my password</a>
+        </p>
+        
       </div>
-      <div class="modal-body text-center">
-        <p class="mb-2">You’ve entered incorrect credentials too many times.</p>
-        <p class="mb-3">Please wait <span id="countdown" class="font-weight-bold text-danger">30</span> seconds before trying again.</p>
-        <div class="spinner-border text-danger mt-3" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
+      <!-- /.card-body -->
     </div>
+    <!-- /.card -->
   </div>
-</div>
+  <!-- /.login-box -->
 
+  <!-- jQuery -->
+  <script src="<?= base_url ?>plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="<?= base_url ?>plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="<?= base_url ?>dist/js/adminlte.min.js"></script>
 
-
-
-<!-- jQuery -->
-<script src="<?= base_url ?>plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="<?= base_url ?>plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="<?= base_url ?>dist/js/adminlte.min.js"></script>
-
-<script>
+  <script>
   $(document).ready(function(){
     end_loader();
-  })
-</script>
 
-
-<script>
-  const LOCKOUT_DURATION = 30; // seconds
-
-  let failedAttempts = parseInt(localStorage.getItem('failedAttempts')) || 0;
-  let lockoutUntil = parseInt(localStorage.getItem('lockoutUntil')) || null;
-
-  function showLockoutModal(secondsLeft) {
-    $('#countdown').text(secondsLeft);
-    $('#lockoutModal').modal('show');
-  }
-
-  function startLockout() {
-    const now = Math.floor(Date.now() / 1000);
-    const unlockTime = now + LOCKOUT_DURATION;
-    localStorage.setItem('lockoutUntil', unlockTime);
-    showLockoutModal(LOCKOUT_DURATION);
-
-    const interval = setInterval(() => {
-      const now = Math.floor(Date.now() / 1000);
-      const remaining = unlockTime - now;
-      $('#countdown').text(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        $('#lockoutModal').modal('hide');
-        localStorage.removeItem('failedAttempts');
-        localStorage.removeItem('lockoutUntil');
-        failedAttempts = 0;
-      }
-    }, 1000);
-  }
-
-  function checkLockoutOnLoad() {
-    const now = Math.floor(Date.now() / 1000);
-    if (lockoutUntil && lockoutUntil > now) {
-      const secondsLeft = lockoutUntil - now;
-      showLockoutModal(secondsLeft);
-      startLockout();
-      return true;
+    // Initialize login attempts count
+    if(!sessionStorage.getItem('loginAttempts')) {
+      sessionStorage.setItem('loginAttempts', 0);
     }
-    return false;
-  }
 
-  $(document).ready(function () {
-    end_loader();
-    const isLocked = checkLockoutOnLoad();
+    // Initialize lock timeout timestamp
+    if(!sessionStorage.getItem('lockTimeout')) {
+      sessionStorage.setItem('lockTimeout', 0);
+    }
 
-    $('#login-frm').on('submit', function (e) {
-      e.preventDefault();
-      if (checkLockoutOnLoad()) return;
+    function unlockInputs(){
+      $('#username-input, #password-input, #login-button').prop('disabled', false);
+      $('#login-message').text('');
+      sessionStorage.setItem('loginAttempts', 0);
+      sessionStorage.setItem('lockTimeout', 0);
+    }
 
-      const username = $('input[name="username"]').val();
-      const password = $('input[name="password"]').val();
+    function lockInputsWithCountdown(seconds){
+      let countdown = seconds;
+      $('#username-input, #password-input, #login-button').prop('disabled', true);
+      $('#login-message').text(`Too many failed attempts. Please wait ${countdown} seconds.`);
 
-      if (username === 'admin' && password === 'admin123') {
-        $('#login-error').hide();
-        alert('Login successful!');
-        localStorage.removeItem('failedAttempts');
-        localStorage.removeItem('lockoutUntil');
-      } else {
-        failedAttempts++;
-        localStorage.setItem('failedAttempts', failedAttempts);
-        $('#login-error')
-          .text('Invalid credentials. Attempt ' + failedAttempts + ' of 3')
-          .fadeIn();
+      // Save lock timeout timestamp
+      const unlockTime = Date.now() + countdown * 1000;
+      sessionStorage.setItem('lockTimeout', unlockTime);
 
-        if (failedAttempts >= 3) {
-          startLockout();
+      const interval = setInterval(() => {
+        countdown--;
+        if(countdown > 0){
+          $('#login-message').text(`Too many failed attempts. Please wait ${countdown} seconds.`);
+        } else {
+          clearInterval(interval);
+          unlockInputs();
         }
+      }, 1000);
+    }
+
+    function checkLockStatus(){
+      const lockTimeout = parseInt(sessionStorage.getItem('lockTimeout'));
+      if(lockTimeout && lockTimeout > Date.now()){
+        // Calculate remaining time in seconds
+        let remaining = Math.ceil((lockTimeout - Date.now()) / 1000);
+        lockInputsWithCountdown(remaining);
+        return true;
+      } else if(lockTimeout && lockTimeout <= Date.now()){
+        unlockInputs();
+        return false;
       }
+      return false;
+    }
+
+    // Check on page load
+    if(!checkLockStatus()){
+      // If not locked, check attempts
+      let attempts = parseInt(sessionStorage.getItem('loginAttempts'));
+      if(attempts >= 3){
+        lockInputsWithCountdown(30); // lock for 30 seconds
+      }
+    }
+
+    $('#login-frm').submit(function(e){
+      e.preventDefault();
+      $('#login-message').text(''); // clear previous messages
+
+      // Prevent submit if disabled
+      if($('#login-button').prop('disabled')) return;
+
+      $.ajax({
+        url: '<?= base_url ?>classes/Login.php?f=login',
+        method: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(resp){
+          if(resp.status === 'success'){
+            // Reset attempts on successful login
+            sessionStorage.setItem('loginAttempts', 0);
+            sessionStorage.setItem('lockTimeout', 0);
+            window.location.href = '<?= base_url ?>admin/index.php'; // change to your post-login redirect
+          }
+          else if(resp.status === 'inactive'){
+            $('#login-message').text('Your account is inactive. Please contact support.');
+          }
+          else if(resp.status === 'incorrect'){
+            // Increment failed attempts
+            let attempts = parseInt(sessionStorage.getItem('loginAttempts')) + 1;
+            sessionStorage.setItem('loginAttempts', attempts);
+
+            if(attempts >= 3){
+              lockInputsWithCountdown(30); // lock for 30 seconds
+            } else {
+              $('#login-message').text('Incorrect username or password. Attempts left: ' + (3 - attempts));
+            }
+          }
+          else{
+            $('#login-message').text('Login failed. Please try again.');
+          }
+        },
+        error: function(){
+          $('#login-message').text('An error occurred. Please try again.');
+        }
+      });
     });
   });
 </script>
-
 
 </body>
 </html>

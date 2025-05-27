@@ -54,4 +54,17 @@
     </script>
     <script src="<?php echo base_url ?>dist/js/script.js"></script>
     <?php echo html_entity_decode($_settings->load_data()); ?>
+
+
+    <script>
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted || (window.performance && performance.navigation.type === 2)) {
+            // Detected back button navigation or browser cache load
+            fetch('<?php echo base_url ?>admin/logout.php')
+                .then(() => {
+                    window.location.href = '<?php echo base_url ?>admin/login.php';
+                });
+        }
+    });
+</script>
   </head>

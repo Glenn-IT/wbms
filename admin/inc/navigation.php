@@ -118,4 +118,8 @@
       }
       $('.nav-link.active').addClass('bg-gradient-primary')
     })
+
+
+    
   </script>
+  

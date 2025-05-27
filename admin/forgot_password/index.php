@@ -30,7 +30,7 @@ if (isset($_SESSION['type'], $_SESSION['message'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -85,59 +85,68 @@ if (isset($_SESSION['type'], $_SESSION['message'])) {
     <div class="forgot-password-container">
         <h2>Forgot Password</h2>
         <form action="reset_password.php" method="POST" id="resetPasswordForm">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" name="username" placeholder="Username" required />
-            </div>
-
-            <div class="form-group">
-                <label for="security_question">Security Question</label>
-                <select name="security_question" class="form-control" required>
-                    <option value="">Select a question</option>
-                    <option value="pet">What is the name of your first pet?</option>
-                    <option value="school">What was the name of your elementary school?</option>
-                    <option value="mother_maiden">What is your mother's maiden name?</option>
-                    <option value="birth_city">In what city were you born?</option>
-                    <option value="nickname">What was your childhood nickname?</option>
-                </select>
-            </div>
-            <br />
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" name="security_answer" placeholder="Answer" required />
-            </div>
-
-            <div class="input-group mb-3">
-    <input type="password" class="form-control" name="new_password" id="new_password" 
-           placeholder="New Password" pattern="^[a-zA-Z0-9]{8,20}$"
-           title="Password must be 8-20 characters and alphanumeric only" required />
-    <span class="input-group-text">
-        <i class="bi bi-eye-slash toggle-password" data-target="new_password" style="cursor:pointer;"></i>
-    </span>
-</div>
-
+            <!-- Security Fields -->
 <div class="input-group mb-3">
-    <input type="password" class="form-control" name="confirm_password" id="confirm_password" 
-           placeholder="Confirm Password" pattern="^[a-zA-Z0-9]{8,20}$"
-           title="Password must be 8-20 characters and alphanumeric only" required />
-    <span class="input-group-text">
-        <i class="bi bi-eye-slash toggle-password" data-target="confirm_password" style="cursor:pointer;"></i>
-    </span>
+    <input type="text" class="form-control" name="username" id="username" placeholder="Username" required />
 </div>
 
+<div class="form-group">
+    <label for="security_question">Security Question</label>
+    <select name="security_question" class="form-control" id="security_question" required>
+        <option value="">Select a question</option>
+        <option value="pet">What is the name of your first pet?</option>
+        <option value="school">What was the name of your elementary school?</option>
+        <option value="mother_maiden">What is your mother's maiden name?</option>
+        <option value="birth_city">In what city were you born?</option>
+        <option value="nickname">What was your childhood nickname?</option>
+    </select>
+</div>
+<br />
+<div class="input-group mb-3">
+    <input type="text" class="form-control" name="security_answer" id="security_answer" placeholder="Answer" required />
+</div>
 
+<!-- Verify Button -->
+<div class="text-center mb-3">
+    <button type="button" class="btn btn-info" id="verifySecurity">Verify</button>
+</div>
 
-            <div class="row">
-                <div class="col-12">
+<!-- Password Fields (Initially Hidden) -->
+<div id="passwordFields" style="display:none;">
+    <div class="input-group mb-3">
+        <input type="password" class="form-control" name="new_password" id="new_password"
+               placeholder="New Password" pattern="^[a-zA-Z0-9]{8,20}$"
+               title="Password must be 8-20 characters and alphanumeric only" required />
+        <span class="input-group-text">
+            <i class="bi bi-eye-slash toggle-password" data-target="new_password" style="cursor:pointer;"></i>
+        </span>
+    </div>
+
+    <div class="input-group mb-3">
+        <input type="password" class="form-control" name="confirm_password" id="confirm_password"
+               placeholder="Confirm Password" pattern="^[a-zA-Z0-9]{8,20}$"
+               title="Password must be 8-20 characters and alphanumeric only" required />
+        <span class="input-group-text">
+            <i class="bi bi-eye-slash toggle-password" data-target="confirm_password" style="cursor:pointer;"></i>
+        </span>
+        
+    </div>
+    <div class="row">
+                <div class="col-12" align="center">
                     <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
                 </div>
             </div>
+</div>
+
+
+
+           
 
             <div class="row mt-3">
                 <a href="../login.php">Back to Login</a>
             </div>
         </form>
     </div>
-
-
 </body>
 
 <!-- Success Modal -->
@@ -177,6 +186,7 @@ if (isset($_SESSION['type'], $_SESSION['message'])) {
 </div>
 
 </html>
+
 <script>
     document.querySelectorAll('.toggle-password').forEach(icon => {
         icon.addEventListener('click', () => {
@@ -195,3 +205,30 @@ if (isset($_SESSION['type'], $_SESSION['message'])) {
         });
     });
 </script>
+<script>
+document.getElementById('verifySecurity').addEventListener('click', function () {
+    const username = document.getElementById('username').value;
+    const question = document.getElementById('security_question').value;
+    const answer = document.getElementById('security_answer').value;
+
+    fetch('verify_security.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `username=${encodeURIComponent(username)}&security_question=${encodeURIComponent(question)}&security_answer=${encodeURIComponent(answer)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('passwordFields').style.display = 'block';
+        } else {
+            alert(data.message); // Show error message
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to verify. Please try again.');
+    });
+});
+</script>
+
+
