@@ -93,7 +93,7 @@
                       <a href="#" class="nav-link nav-reports_monthly_billing">
                         <i class="nav-icon fas fa-info-circle"></i>
                         <p>
-                         Recipts
+                         Receipts
                         </p>
                       </a>
                     </li>

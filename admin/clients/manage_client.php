@@ -134,15 +134,23 @@ document.getElementById('contact').addEventListener('input', function () {
 					end_loader();
 				},
 				success:function(resp){
-					if(typeof resp =='object' && resp.status == 'success'){
+					if(typeof resp == 'object' && resp.status == 'success'){
     var el = $('<div>')
         .addClass("alert alert-success err-msg")
-        .text("Client details saved successfully.")
+        .text("Client details saved successfully.");
     _this.prepend(el);
     el.show('slow');
     $("html, body, .modal").scrollTop(0);
+
+    // Clear the form fields
+    _this.trigger("reset");
+
+    // Reset the select2 dropdown manually if visible
+    $('#category_id').val(null).trigger('change');
+
     end_loader();
 }
+
 
 					
 					else if(resp.status == 'failed' && !!resp.msg){
