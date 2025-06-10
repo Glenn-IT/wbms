@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 22, 2025 at 09:50 AM
+-- Generation Time: Jun 05, 2025 at 05:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -153,7 +153,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `middlename`, `lastname`, `username`, `password`, `avatar`, `last_login`, `type`, `date_added`, `date_updated`, `security_question`, `security_answer`) VALUES
-(1, 'Adminstrator', '', 'Admin', 'admin', '7488e331b8b64e5794da3fa4eb10ad5d', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2025-05-22 15:33:38', 'pet', 'sample');
+(1, 'Adminstrator', '', 'Admin', 'admin', 'e66055e8e308770492a44bf16e875127', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2025-05-27 17:04:54', 'pet', 'sample');
 
 --
 -- Indexes for dumped tables

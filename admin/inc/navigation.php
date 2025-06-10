@@ -33,30 +33,45 @@
                     </li> 
                     <li class="nav-header">Main</li>
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-clients">
+                    <a href="<?php echo base_url ?>admin/?page=clients/manage_client" class="nav-link nav-clients_manage_client">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
-                          List of Clients
+                          Clients
                         </p>
                       </a>
                     </li>
+
                     <li class="nav-item dropdown">
+                      <!--<a href="<?php echo base_url ?>admin/?page=billings" class="nav-link nav-billings">-->
                       <a href="#" class="nav-link nav-billings">
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
-                          Transactions
+                          Bills Payment
                         </p>
                       </a>
                     </li>
+
+                    <li class="nav-item dropdown">
+                      <a href="#" class="nav-link nav-clients_issue">
+                        <i class="nav-icon fas fa-exclamation-triangle"></i>
+                        <p>
+                          Clients Issue
+                        </p>
+                      </a>
+                    </li>
+                    
                     <li class="nav-header">Reports</li>
+
                     <li class="nav-item dropdown">
                       <a href="#" class="nav-link nav-reports_monthly_billing">
-                        <i class="nav-icon fas fa-circle"></i>
+                        <i class="nav-icon fas fa-info-circle"></i>
                         <p>
                          Reports
                         </p>
                       </a>
                     </li>
+
+                    
                     <?php if($_settings->userdata('type') == 1): ?>
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">
