@@ -27,25 +27,18 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					<div class="container-fluid">
 						<form action="" id="client-form">
 							<input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
-							<?php 
-// Fetch the Residential category ID
-$residential_qry = $conn->query("SELECT id FROM `category_list` WHERE name = 'Residential' AND delete_flag = 0 AND status = 1 LIMIT 1");
-$residential_id = ($residential_qry && $residential_qry->num_rows > 0) ? $residential_qry->fetch_assoc()['id'] : '';
-if (!isset($category_id)) $category_id = $residential_id;
-?>
-<div class="form-group mb-3" style="display: none;">
-	<label for="category_id" class="control-label">Category</label>
-	<select name="category_id" id="category_id" class="form-control form-control-sm rounded-0" required="required">
-		<option value="" disabled <?= empty($category_id) ? 'selected' : '' ?>></option>
-		<?php 
-		$category_qry = $conn->query("SELECT * FROM `category_list` WHERE delete_flag = 0 AND `status` = 1");
-		while($row = $category_qry->fetch_assoc()):
-		?>
-		<option value="<?= $row['id'] ?>" <?= $category_id == $row['id'] ? 'selected' : '' ?>><?= $row['name'] ?></option>
-		<?php endwhile; ?>
-	</select>
-</div>
-
+							<div class="form-group mb-3">
+								<label for="category_id" class="control-label">Category</label>
+								<select name="category_id" id="category_id" class="form-control form-control-sm rounded-0" required="required">
+									<option value="" <?= !isset($category_id) ? 'selected' : '' ?> disabled></option>
+									<?php 
+									$category_qry = $conn->query("SELECT * FROM `category_list` where delete_flag = 0 and `status` = 1 ".(isset($category_id) && is_numeric($category_id) ? " or id != '{$category_id}' " : '')." ");
+									while($row = $category_qry->fetch_assoc()):
+									?>
+									<option value="<?=  $row['id'] ?>" <?= isset($category_id) && $category_id == $row['id'] ? "selected" : '' ?>><?= $row['name'] ?></option>
+									<?php endwhile; ?>
+								</select>
+							</div>
 							<div class="form-group mb-3">
 								<label for="firstname" class="control-label">First Name</label>
 								<input type="text" class="form-control form-control-sm rounded-0" id="firstname" name="firstname" required="required" value="<?= isset($firstname) ? $firstname : '' ?>"/>
@@ -59,31 +52,15 @@ if (!isset($category_id)) $category_id = $residential_id;
 								<input type="text" class="form-control form-control-sm rounded-0" id="lastname" name="lastname" required value="<?= isset($lastname) ? $lastname : '' ?>"/>
 							</div>
 							<div class="form-group mb-3">
-    <label for="contact" class="control-label">Contact #</label>
-    <input type="text" 
-           class="form-control form-control-sm rounded-0" 
-           id="contact" 
-           name="contact" 
-           required 
-           maxlength="11"
-           inputmode="numeric" 
-           pattern="\d{11}" 
-           title="Please enter exactly 11 digits"
-           value="<?= isset($contact) ? $contact : '' ?>"/>
-</div>
-<script>
-document.getElementById('contact').addEventListener('input', function () {
-    // Replace non-digits and limit to 11 characters
-    this.value = this.value.replace(/\D/g, '').slice(0, 11);
-});
-</script>
-
+								<label for="contact" class="control-label">Contact #</label>
+								<input type="text" class="form-control form-control-sm rounded-0" id="contact" name="contact" required value="<?= isset($contact) ? $contact : '' ?>"/>
+							</div>
 							<div class="form-group mb-3">
-								<label for="address" class="control-label">Zone / Street (e.g., Zone 6, Mabini Street)</label>
+								<label for="address" class="control-label">Address</label>
 								<textarea rows="3" class="form-control form-control-sm rounded-0" id="address" name="address" required="required"><?= isset($address) ? $address : '' ?></textarea>
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
-								<label for="meter_code" class="control-label">Meter ID</label>
+								<label for="meter_code" class="control-label">Meter Code</label>
 								<input type="text" class="form-control form-control-sm rounded-0" id="meter_code" name="meter_code" value="<?= isset($meter_code) ? $meter_code : '' ?>" required="required">
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
@@ -135,17 +112,8 @@ document.getElementById('contact').addEventListener('input', function () {
 				},
 				success:function(resp){
 					if(typeof resp =='object' && resp.status == 'success'){
-    var el = $('<div>')
-        .addClass("alert alert-success err-msg")
-        .text("Client details saved successfully.")
-    _this.prepend(el);
-    el.show('slow');
-    $("html, body, .modal").scrollTop(0);
-    end_loader();
-}
-
-					
-					else if(resp.status == 'failed' && !!resp.msg){
+						location.href = "./?page=clients/view_client&id="+resp.aid
+					}else if(resp.status == 'failed' && !!resp.msg){
                         var el = $('<div>')
                             el.addClass("alert alert-danger err-msg").text(resp.msg)
                             _this.prepend(el)
@@ -162,8 +130,4 @@ document.getElementById('contact').addEventListener('input', function () {
 		})
 
 	})
-
-
-
-
 </script>

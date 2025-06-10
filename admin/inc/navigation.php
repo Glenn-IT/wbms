@@ -62,23 +62,58 @@
                     
                     <li class="nav-header">Reports</li>
 
-                    <li class="nav-item dropdown">
+                    <!--<li class="nav-item dropdown">
                       <a href="#" class="nav-link nav-reports_monthly_billing">
                         <i class="nav-icon fas fa-info-circle"></i>
                         <p>
                          Reports
                         </p>
                       </a>
+                    </li>-->
+
+                    <li class="nav-item dropdown">
+                      <a href="#" class="nav-link nav-reports_monthly_billing">
+                        <i class="nav-icon fas fa-info-circle"></i>
+                        <p>
+                         List of Clients
+                        </p>
+                      </a>
                     </li>
 
-                    
+                    <li class="nav-item dropdown">
+                      <a href="#" class="nav-link nav-reports_monthly_billing">
+                        <i class="nav-icon fas fa-info-circle"></i>
+                        <p>
+                         List of Due
+                        </p>
+                      </a>
+                    </li> 
+
+                    <li class="nav-item dropdown">
+                      <a href="#" class="nav-link nav-reports_monthly_billing">
+                        <i class="nav-icon fas fa-info-circle"></i>
+                        <p>
+                         Recipts
+                        </p>
+                      </a>
+                    </li>
+  
+
                     <?php if($_settings->userdata('type') == 1): ?>
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-category">
+                      <a href="#" class="nav-link nav-about_us">
                         <i class="nav-icon fas fa-th-list"></i>
                         <p>
                           About us
+                        </p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a href="#" class="nav-link nav-user_manual">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>
+                          User's Manual
                         </p>
                       </a>
                     </li>
