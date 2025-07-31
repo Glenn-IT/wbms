@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 05, 2025 at 05:28 PM
+-- Generation Time: Jul 31, 2025 at 11:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -100,7 +100,8 @@ CREATE TABLE `client_list` (
 --
 
 INSERT INTO `client_list` (`id`, `code`, `category_id`, `firstname`, `middlename`, `lastname`, `contact`, `address`, `meter_code`, `first_reading`, `status`, `delete_flag`, `date_created`, `date_updated`) VALUES
-(1, '202205020001', 1, 'Mark', 'D', 'Cooper', '09123456789', 'Sample Address', '123456', 1001.00, 1, 0, '2022-05-02 15:13:35', '2022-05-02 15:13:35');
+(1, '202205020001', 1, 'Mark', 'D', 'Cooper', '09123456789', 'Sample Address', '123456', 1001.00, 1, 0, '2022-05-02 15:13:35', '2022-05-02 15:13:35'),
+(2, '202507310001', 1, 'Glenard', 'U', 'Pagurayan', '09123123123', 'Bishan St. 23\r\n4-232', '123993', 3123.00, 1, 1, '2025-07-31 17:31:03', '2025-07-31 17:37:11');
 
 -- --------------------------------------------------------
 
@@ -153,7 +154,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `middlename`, `lastname`, `username`, `password`, `avatar`, `last_login`, `type`, `date_added`, `date_updated`, `security_question`, `security_answer`) VALUES
-(1, 'Adminstrator', '', 'Admin', 'admin', 'e66055e8e308770492a44bf16e875127', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2025-05-27 17:04:54', 'pet', 'sample');
+(1, 'Adminstrator', '', 'Admin', 'admin', 'e66055e8e308770492a44bf16e875127', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2025-05-27 17:04:54', 'pet', 'sample'),
+(5, 'New', '', 'Admin', 'newadmin', '7488e331b8b64e5794da3fa4eb10ad5d', NULL, NULL, 1, '2025-07-31 17:34:20', '2025-07-31 17:35:30', 'pet', 'dog');
 
 --
 -- Indexes for dumped tables
@@ -211,7 +213,7 @@ ALTER TABLE `category_list`
 -- AUTO_INCREMENT for table `client_list`
 --
 ALTER TABLE `client_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `system_info`
@@ -223,7 +225,7 @@ ALTER TABLE `system_info`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
