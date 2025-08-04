@@ -39,6 +39,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 									<?php endwhile; ?>
 								</select>
 							</div>
+							
 							<div class="form-group mb-3">
 								<label for="reading_date" class="control-label">Reading Date</label>
 								<input type="date" class="form-control form-control-sm rounded-0" id="reading_date" name="reading_date" required="required" max="<?= date("Y-m-d") ?>" value="<?= isset($reading_date) ? date("Y-m-d", strtotime($reading_date)) : '' ?>"/>

@@ -7,6 +7,32 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
         }
     }
 }
+
+
+function generate_meter_code($conn) {
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $numbers = '0123456789';
+    $random = '';
+
+    // Generate 2 random letters
+    for ($i = 0; $i < 2; $i++) {
+        $random .= $characters[rand(0, strlen($characters) - 1)];
+    }
+
+    // Generate 3 random numbers
+    for ($i = 0; $i < 3; $i++) {
+        $random .= $numbers[rand(0, strlen($numbers) - 1)];
+    }
+
+    // Optional: ensure uniqueness (basic check against existing meter_codes)
+    $check = $conn->query("SELECT COUNT(*) as count FROM client_list WHERE meter_code = '$random'");
+    if ($check && $check->fetch_assoc()['count'] > 0) {
+        return generate_meter_code($conn); // regenerate if duplicate
+    }
+
+    return $random;
+}
+
 ?>
 <div class="mx-0 py-5 px-3 mx-ns-4 bg-gradient-primary">
 	<h3><b><?= isset($id) ? "Update Client Details - ".(isset($code) ? $code : '') : "Create New Client" ?></b></h3>
@@ -82,7 +108,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
 								<label for="meter_code" class="control-label">Meter ID</label>
-								<input type="text" class="form-control form-control-sm rounded-0" id="meter_code" name="meter_code" value="<?= isset($meter_code) ? $meter_code : '' ?>" required="required">
+								<input type="text" class="form-control form-control-sm rounded-0" id="meter_code" name="meter_code" value="<?= isset($meter_code) ? $meter_code : generate_meter_code($conn) ?>" readonly required="required">
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
 								<label for="first_reading" class="control-label">First Reading</label>

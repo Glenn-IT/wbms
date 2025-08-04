@@ -42,8 +42,8 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                      <!--<a href="<?php echo base_url ?>admin/?page=billings" class="nav-link nav-billings">-->
-                      <a href="#" class="nav-link nav-billings">
+                      <a href="<?php echo base_url ?>admin/?page=billings" class="nav-link nav-billings">
+                      <!--<a href="#" class="nav-link nav-billings">-->
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
                           Bills Payment
