@@ -112,7 +112,12 @@ function generate_meter_code($conn) {
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
 								<label for="first_reading" class="control-label">First Reading</label>
-								<input type="text" class="form-control form-control-sm rounded-0" id="first_reading" name="first_reading" value="<?= isset($first_reading) ? $first_reading : '' ?>" required="required">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text">₱</span>
+									</div>
+									<input type="number" class="form-control form-control-sm rounded-0" id="first_reading" name="first_reading" value="<?= isset($first_reading) ? $first_reading : '' ?>" step="0.01" min="0" required="required">
+								</div>
 							</div>
 							<div class="form-group">
 								<label for="status" class="control-label">Status</label>
@@ -213,13 +218,12 @@ $(document).ready(function(){
             },
             success:function(resp){
                 if(typeof resp == 'object' && resp.status == 'success'){
-                    var el = $('<div>').addClass("alert alert-success err-msg").text("Client details saved successfully.");
-                    _this.prepend(el);
-                    el.show('slow');
-                    $("html, body, .modal").scrollTop(0);
-                    _this.trigger("reset");
-                    $('#category_id').val(null).trigger('change');
+                    alert_toast("Client details saved successfully.",'success');
                     end_loader();
+                    // Redirect to clients list page after successful save
+                    setTimeout(function(){
+                        location.href = './?page=clients';
+                    }, 1500);
                 }
                 else if(resp.status == 'failed' && !!resp.msg){
                     var el = $('<div>').addClass("alert alert-danger err-msg").text(resp.msg)

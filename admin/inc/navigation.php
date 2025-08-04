@@ -72,7 +72,7 @@
                     </li>-->
 
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-reports_monthly_billing">
+                      <a href="<?php echo base_url ?>admin/?page=clients" class="nav-link nav-clients">
                         <i class="nav-icon fas fa-info-circle"></i>
                         <p>
                          List of Clients

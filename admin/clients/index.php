@@ -29,7 +29,7 @@
 						<th>Code</th>
 						<th>Name</th>
 						<th>Status</th>
-						<th>Action</th>
+						<!--<th>Action</th>-->
 					</tr>
 				</thead>
 				<tbody>
@@ -55,7 +55,7 @@
 								}
 								?>
                             </td>
-							<td align="center">
+							<!--<td align="center">
 								 <button type="button" class="btn btn-flat p-1 btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
 				                  		Action
 				                    <span class="sr-only">Toggle Dropdown</span>
@@ -67,7 +67,7 @@
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
 				                  </div>
-							</td>
+							</td>-->
 						</tr>
 					<?php endwhile; ?>
 				</tbody>
