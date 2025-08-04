@@ -220,9 +220,9 @@ $(document).ready(function(){
                 if(typeof resp == 'object' && resp.status == 'success'){
                     alert_toast("Client details saved successfully.",'success');
                     end_loader();
-                    // Redirect to clients list page after successful save
+                    // Refresh the page to stay on the same page
                     setTimeout(function(){
-                        location.href = './?page=clients';
+                        location.reload();
                     }, 1500);
                 }
                 else if(resp.status == 'failed' && !!resp.msg){
