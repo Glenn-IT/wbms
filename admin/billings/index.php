@@ -66,7 +66,9 @@
 				                  <div class="dropdown-menu" role="menu">
 				                    <a class="dropdown-item view_data" href="./?page=billings/view_billing&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> View</a>
 				                    <div class="dropdown-divider"></div>
-				                    <a class="dropdown-item edit_data" href="./?page=billings/manage_billing&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
+				                    <a class="dropdown-item input_reading" href="./?page=billings/input_reading&id=<?php echo $row['id'] ?>"><span class="fa fa-tachometer-alt text-info"></span> Input Reading</a>
+				                    <div class="dropdown-divider"></div>
+				                    <a class="dropdown-item input_billing" href="./?page=billings/input_billing&id=<?php echo $row['id'] ?>"><span class="fa fa-calculator text-warning"></span> Input Billing</a>
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
 				                  </div>
