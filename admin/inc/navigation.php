@@ -62,19 +62,19 @@
                     
                     <li class="nav-header">Reports</li>
 
-                    <!--<li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-reports_monthly_billing">
-                        <i class="nav-icon fas fa-info-circle"></i>
+                    <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=reports" class="nav-link nav-reports">
+                        <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
                          Reports
                         </p>
                       </a>
-                    </li>-->
+                    </li>
 
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=clients" class="nav-link nav-clients">
                       <!--<a href="#" class="nav-link nav-clients">-->
-                        <i class="nav-icon fas fa-info-circle"></i>
+                        <i class="nav-icon fas fa-list"></i>
                         <p>
                          List of Clients
                         </p>
@@ -83,7 +83,7 @@
 
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=due_list" class="nav-link nav-due_list">
-                        <i class="nav-icon fas fa-info-circle"></i>
+                        <i class="nav-icon fas fa-clock"></i>
                         <p>
                          List of Due
                         </p>
@@ -104,7 +104,7 @@
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">
                       <a href="#" class="nav-link nav-about_us">
-                        <i class="nav-icon fas fa-th-list"></i>
+                        <i class="nav-icon fas fa-info-circle"></i>
                         <p>
                           About us
                         </p>
