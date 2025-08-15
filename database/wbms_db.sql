@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 31, 2025 at 11:37 AM
+-- Generation Time: Aug 15, 2025 at 08:19 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,6 +36,7 @@ CREATE TABLE `billing_list` (
   `previous` float(12,2) NOT NULL DEFAULT 0.00,
   `rate` float(12,2) NOT NULL DEFAULT 0.00,
   `total` float(12,2) NOT NULL DEFAULT 0.00,
+  `penalty` float(12,2) NOT NULL DEFAULT 0.00,
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0= pending,\r\n1= paid',
   `date_created` datetime NOT NULL DEFAULT current_timestamp(),
   `date_updated` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -45,9 +46,9 @@ CREATE TABLE `billing_list` (
 -- Dumping data for table `billing_list`
 --
 
-INSERT INTO `billing_list` (`id`, `client_id`, `reading_date`, `due_date`, `reading`, `previous`, `rate`, `total`, `status`, `date_created`, `date_updated`) VALUES
-(1, 1, '2022-04-01', '2022-04-15', 1100.00, 1001.00, 10.75, 1064.25, 1, '2022-05-02 15:14:03', '2022-05-02 15:14:03'),
-(2, 1, '2022-05-02', '2022-05-15', 1189.00, 1100.00, 10.75, 956.75, 1, '2022-05-02 15:14:27', '2022-05-02 15:14:27');
+INSERT INTO `billing_list` (`id`, `client_id`, `reading_date`, `due_date`, `reading`, `previous`, `rate`, `total`, `penalty`, `status`, `date_created`, `date_updated`) VALUES
+(7, 15, '2025-08-15', '2025-09-15', 30.00, 0.00, 10.75, 322.50, 0.00, 1, '2025-08-15 13:14:59', '2025-08-15 13:16:32'),
+(10, 15, '2025-08-15', '2025-09-15', 25.00, 0.00, 10.75, 268.75, 0.00, 1, '2025-08-15 13:48:26', '2025-08-15 14:16:46');
 
 -- --------------------------------------------------------
 
@@ -100,8 +101,20 @@ CREATE TABLE `client_list` (
 --
 
 INSERT INTO `client_list` (`id`, `code`, `category_id`, `firstname`, `middlename`, `lastname`, `contact`, `address`, `meter_code`, `first_reading`, `status`, `delete_flag`, `date_created`, `date_updated`) VALUES
-(1, '202205020001', 1, 'Mark', 'D', 'Cooper', '09123456789', 'Sample Address', '123456', 1001.00, 1, 0, '2022-05-02 15:13:35', '2022-05-02 15:13:35'),
-(2, '202507310001', 1, 'Glenard', 'U', 'Pagurayan', '09123123123', 'Bishan St. 23\r\n4-232', '123993', 3123.00, 1, 1, '2025-07-31 17:31:03', '2025-07-31 17:37:11');
+(3, '202508040001', 1, 'Sample', 'Sample', 'Sample', '09798987722', 'Zone 5', '1122', 1320.00, 1, 1, '2025-08-04 12:19:56', '2025-08-15 12:54:40'),
+(4, '202508040002', 1, 'Sample2', 'Sample2', 'Sample2', '09987987987', 'Zone 4', '0123', 231.00, 1, 1, '2025-08-04 12:21:58', '2025-08-15 12:54:37'),
+(5, '202508040003', 1, 'Glenard', 'U', 'Pagurayan', '09879798798', 'Zone 2', 'PS409', 200.00, 1, 1, '2025-08-04 16:32:02', '2025-08-15 12:54:32'),
+(6, '202508040004', 1, 'Glenard', 'U', 'Pagurayan', '09787979879', 'Zone 1', 'LV645', 200.00, 1, 1, '2025-08-04 16:53:39', '2025-08-15 12:54:30'),
+(7, '202508040005', 1, 'Glenard', 'U', 'Pagurayan', '08979797987', 'Zone 1', 'JG574', 3000.00, 1, 1, '2025-08-04 16:54:29', '2025-08-15 12:54:27'),
+(8, '202508040006', 1, 'Glenard', 'U', 'Pagurayan', '03213213213', 'Zone 1', 'ZD709', 200.00, 1, 1, '2025-08-04 16:56:01', '2025-08-15 12:54:24'),
+(9, '202508150001', 1, 'Kiowe', 'Koks', 'Namsa', '09879878979', 'Zone 1', 'RL634', 55.00, 1, 1, '2025-08-15 12:55:25', '2025-08-15 13:13:25'),
+(10, '202508150002', 1, 'Jsud', 'JJust', 'Kosid', '09787987775', 'Zone 2', 'JF681', 36.00, 1, 1, '2025-08-15 12:59:04', '2025-08-15 13:13:22'),
+(11, '202508150003', 1, 'Kolsp', 'LLpao', 'Iuwe', '09789798789', 'Zone 3', 'QQ099', 25.00, 1, 1, '2025-08-15 12:59:33', '2025-08-15 13:13:17'),
+(12, '202508150004', 1, 'Lopd', 'OOks', 'Sudiwj', '09987987987', 'Zone 4', 'LC094', 57.00, 1, 1, '2025-08-15 13:02:08', '2025-08-15 13:13:14'),
+(13, '202508150005', 1, 'Kosdw', 'Sdweq', 'Opdw', '09798797979', 'Zone 5', 'MJ165', 25.00, 1, 1, '2025-08-15 13:04:14', '2025-08-15 13:13:11'),
+(14, '202508150001', 1, 'Kidow', 'Lokdw', 'Okwe', '09798798798', 'Zone 1', 'DL991', 0.00, 1, 0, '2025-08-15 13:13:38', '2025-08-15 13:13:38'),
+(15, '202508150002', 1, 'Lowep', 'Poew', 'Kidw', '09879879879', 'Zone 2', 'IW246', 0.00, 1, 0, '2025-08-15 13:13:50', '2025-08-15 13:13:50'),
+(16, '202508150003', 1, 'Lopeq', 'POwed', 'Kiduw', '09879798798', 'Zone 3', 'VE071', 0.00, 1, 0, '2025-08-15 13:14:00', '2025-08-15 13:14:00');
 
 -- --------------------------------------------------------
 
@@ -154,7 +167,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `middlename`, `lastname`, `username`, `password`, `avatar`, `last_login`, `type`, `date_added`, `date_updated`, `security_question`, `security_answer`) VALUES
-(1, 'Adminstrator', '', 'Admin', 'admin', 'e66055e8e308770492a44bf16e875127', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2025-05-27 17:04:54', 'pet', 'sample'),
+(1, 'Adminstrator', '', 'Admin', 'admin', '7488e331b8b64e5794da3fa4eb10ad5d', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2025-08-15 12:23:25', 'pet', 'sample'),
 (5, 'New', '', 'Admin', 'newadmin', '7488e331b8b64e5794da3fa4eb10ad5d', NULL, NULL, 1, '2025-07-31 17:34:20', '2025-07-31 17:35:30', 'pet', 'dog');
 
 --
@@ -201,7 +214,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `billing_list`
 --
 ALTER TABLE `billing_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `category_list`
@@ -213,7 +226,7 @@ ALTER TABLE `category_list`
 -- AUTO_INCREMENT for table `client_list`
 --
 ALTER TABLE `client_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `system_info`

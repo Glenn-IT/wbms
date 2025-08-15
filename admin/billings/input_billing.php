@@ -60,12 +60,12 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 								<input type="hidden" name="reading_date" value="<?= isset($reading_date) ? date("Y-m-d", strtotime($reading_date)) : '' ?>"/>
 							</div>
 							
-							<!-- Display Previous Reading (readonly) -->
+							<!-- Display Previous Reading (readonly) 
 							<div class="form-group mb-3">
 								<label for="previous_display" class="control-label">Previous Reading</label>
 								<input type="text" class="form-control form-control-sm rounded-0" readonly value="<?= isset($previous) ? $previous : '' ?>"/>
 								<input type="hidden" name="previous" value="<?= isset($previous) ? $previous : '' ?>"/>
-							</div>
+							</div>-->
 							
 							<!-- Display Current Reading (readonly) -->
 							<div class="form-group mb-3">
