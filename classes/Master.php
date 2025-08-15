@@ -154,19 +154,29 @@ Class Master extends DBConnection {
 	}
 	function get_previous_reading(){
 		extract($_POST);
-		$qry = $this->conn->query("SELECT id, coalesce((SELECT `reading` FROM `billing_list` where client_id = client_list.id order by unix_timestamp(reading_date) desc limit 1 ), first_reading) as previous FROM `client_list` where id = '{$client_id}'");
-		if($qry->num_rows > 0){
-			$result = $qry->fetch_array();
-			$resp['status'] = 'success';
-			$resp['previous'] = $result['previous'];
-		}else{
-			$resp['status'] = 'failed';
-		}
+		
+		// Always set previous reading to 0 so computation is based only on current reading
+		$resp['status'] = 'success';
+		$resp['previous'] = 0;
+		
 		return json_encode($resp);
 	}
 	function save_billing(){
 		extract($_POST);
 		$data = "";
+		
+		// Check if client already has an unpaid bill (for new bills only)
+		if(empty($id)){
+			$check_unpaid = $this->conn->query("SELECT COUNT(*) as unpaid_count FROM `billing_list` WHERE client_id = '{$client_id}' AND status = 0");
+			$unpaid_result = $check_unpaid->fetch_assoc();
+			
+			if($unpaid_result['unpaid_count'] > 0){
+				$resp['status'] = 'failed';
+				$resp['msg'] = 'This client already has an unpaid bill. Please settle the existing bill before creating a new one.';
+				return json_encode($resp);
+			}
+		}
+		
 		foreach($_POST as $k =>$v){
 			if(!in_array($k,array('id'))){
 				if(!empty($data)) $data .=",";
@@ -199,6 +209,28 @@ Class Master extends DBConnection {
 			$this->settings->set_flashdata('success',$resp['msg']);
 			return json_encode($resp);
 	}
+	
+	function get_billing_history(){
+		extract($_POST);
+		$qry = $this->conn->query("SELECT b.*, c.code, concat(c.lastname, ', ', c.firstname, ' ', coalesce(c.middlename,'')) as `name` 
+								   FROM `billing_list` b 
+								   INNER JOIN client_list c ON b.client_id = c.id 
+								   WHERE b.client_id = '{$client_id}' 
+								   ORDER BY unix_timestamp(b.reading_date) DESC");
+		
+		if($qry->num_rows > 0){
+			$resp['status'] = 'success';
+			$resp['data'] = array();
+			while($row = $qry->fetch_assoc()){
+				$resp['data'][] = $row;
+			}
+		}else{
+			$resp['status'] = 'failed';
+			$resp['msg'] = 'No billing history found for this client.';
+		}
+		return json_encode($resp);
+	}
+	
 	function delete_billing(){
 		extract($_POST);
 		$del = $this->conn->query("DELETE FROM `billing_list` where id = '{$id}'");
@@ -238,6 +270,9 @@ switch ($action) {
 	break;
 	case 'save_billing':
 		echo $Master->save_billing();
+	break;
+	case 'get_billing_history':
+		echo $Master->get_billing_history();
 	break;
 	case 'delete_billing':
 		echo $Master->delete_billing();

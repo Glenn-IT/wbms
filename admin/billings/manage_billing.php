@@ -30,9 +30,26 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							<div class="form-group mb-3">
 								<label for="client_id" class="control-label">Client</label>
 								<select name="client_id" id="client_id" class="form-control form-control-sm rounded-0" required="required">
-									<option value="" <?= !isset($client_id) ? 'selected' : '' ?> disabled></option>
+									<option value="" <?= !isset($client_id) ? 'selected' : '' ?> disabled>Select a client</option>
 									<?php 
-									$client_qry = $conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', coalesce(middlename)) as `name` FROM `client_list` where delete_flag = 0 and `status` = 1 ".(isset($client_id) && is_numeric($client_id) ? " or id != '{$client_id}' " : '')." ");
+									if(isset($id) && !empty($id)) {
+										// For editing existing bills, show all active clients
+										$client_qry = $conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', coalesce(middlename)) as `name` FROM `client_list` where delete_flag = 0 and `status` = 1");
+									} else {
+										// For new bills, show only clients without unpaid bills
+										$client_qry = $conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', coalesce(middlename)) as `name` 
+																   FROM `client_list` 
+																   WHERE delete_flag = 0 AND `status` = 1 
+																   AND id NOT IN (SELECT client_id FROM billing_list WHERE status = 0)
+																   ORDER BY lastname, firstname");
+									}
+									
+									if($client_qry->num_rows == 0 && (!isset($id) || empty($id))):
+									?>
+									<option value="" disabled>No clients available for billing (all have unpaid bills)</option>
+									<?php 
+									endif;
+									
 									while($row = $client_qry->fetch_assoc()):
 									?>
 									<option value="<?=  $row['id'] ?>" <?= isset($client_id) && $client_id == $row['id'] ? "selected" : '' ?>><?= $row['code']." - ".$row['name'] ?></option>
@@ -44,9 +61,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 								<label for="reading_date" class="control-label">Reading Date</label>
 								<input type="date" class="form-control form-control-sm rounded-0" id="reading_date" name="reading_date" required="required" max="<?= date("Y-m-d") ?>" value="<?= isset($reading_date) ? date("Y-m-d", strtotime($reading_date)) : '' ?>"/>
 							</div>
-							<div class="form-group mb-3">
+							<div class="form-group mb-3" style="display: none;">
 								<label for="previous" class="control-label">Previous Reading</label>
-								<input type="text" class="form-control form-control-sm rounded-0" id="previous" name="previous" required="required" readonly value="<?= isset($previous) ? $previous : '' ?>"/>
+								<input type="hidden" class="form-control form-control-sm rounded-0" id="previous" name="previous" value="0"/>
 							</div>
 							<div class="form-group mb-3">
 								<label for="reading" class="control-label">Current Reading</label>
@@ -85,13 +102,12 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 <script>
 	function calc_total(){
 		var current_reading = $('#reading').val()
-		var previous = $('#previous').val()
 		var rate = $('#rate').val()
 
 		current_reading = current_reading > 0 ? current_reading : 0;
-		previous = previous > 0 ? previous : 0;
 
-		$('#total').val((parseFloat(current_reading) - parseFloat(previous)) * parseFloat(rate))
+		// Calculate total based only on current reading (no previous reading subtraction)
+		$('#total').val(parseFloat(current_reading) * parseFloat(rate))
 	}
 	$(document).ready(function(){
 		$('#client_id').select2({
@@ -102,27 +118,12 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			var id = $(this).val()
 			if(id <= 0)
 				return false;
-			start_loader()
-			$.ajax({
-				url:_base_url_+"classes/Master.php?f=get_previous_reading",
-				data:{client_id : id, id: '<?= isset($id) ? $id : '' ?>'},
-				method:'POST',
-				dataType:'json',
-				error:err=>{
-					console.log(err)
-					alert_toast("An error occurred.", 'error')
-					end_loader()
-				},
-				success:function(resp){
-					if(resp.status == 'success'){
-						$('#previous').val(resp.previous)
-						calc_total()
-					}else{
-						alert_toast("An error occurred.", 'error')
-					}
-					end_loader();
-				}
-			})
+			
+			// Set previous reading to 0 automatically
+			$('#previous').val(0);
+			// Clear current reading and total when client changes
+			$('#reading').val('')
+			$('#total').val('')
 		})
 		$('#reading').on('input', function(){
 			calc_total()

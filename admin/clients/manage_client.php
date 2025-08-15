@@ -118,9 +118,9 @@ function generate_meter_code($conn) {
 								<label for="meter_code" class="control-label">Meter ID</label>
 								<input type="text" class="form-control form-control-sm rounded-0" id="meter_code" name="meter_code" value="<?= isset($meter_code) ? $meter_code : generate_meter_code($conn) ?>" readonly required="required">
 							</div>
-							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3" style="display: none;">
 								<label for="first_reading" class="control-label">First Reading</label>
-								<input type="number" class="form-control form-control-sm rounded-0" id="first_reading" name="first_reading" value="<?= isset($first_reading) ? $first_reading : '' ?>" step="0.01" min="0" required="required">
+								<input type="number" class="form-control form-control-sm rounded-0" id="first_reading" name="first_reading" value="<?= isset($first_reading) ? $first_reading : '0' ?>" step="0.01" min="0" required="required">
 							</div>
 							<div class="form-group">
 								<label for="status" class="control-label">Status</label>
