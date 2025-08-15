@@ -91,8 +91,8 @@
                     </li> 
 
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-reports_monthly_billing">
-                        <i class="nav-icon fas fa-info-circle"></i>
+                      <a href="<?php echo base_url ?>admin/?page=receipts" class="nav-link nav-receipts">
+                        <i class="nav-icon fas fa-receipt"></i>
                         <p>
                          Receipts
                         </p>
