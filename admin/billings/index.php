@@ -17,10 +17,11 @@
 				<colgroup>
 					<col width="5%">
 					<col width="10%">
-					<col width="25%">
-					<col width="15%">
 					<col width="20%">
+					<col width="12%">
+					<col width="15%">
 					<col width="10%">
+					<col width="13%">
 					<col width="15%">
 				</colgroup>
 				<thead>
@@ -31,6 +32,7 @@
 						<th>Amount</th>
 						<th>Due Date</th>
 						<th>Status</th>
+						<th>Due Status</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -55,6 +57,29 @@
 									case 1:
 										echo '<span class="badge badge-success bg-gradient-success text-sm px-3 rounded-pill">Paid</span>';
 										break;
+								}
+								?>
+                            </td>
+							<td class="text-center">
+								<?php
+								$current_date = date('Y-m-d');
+								$due_date = date('Y-m-d', strtotime($row['due_date']));
+								
+								if($row['status'] == 1) {
+									// Bill is paid
+									echo '<span class="badge badge-success bg-gradient-success text-sm px-3 rounded-pill">Paid</span>';
+								} elseif($current_date > $due_date) {
+									// Bill is overdue
+									$days_overdue = (strtotime($current_date) - strtotime($due_date)) / (60 * 60 * 24);
+									echo '<span class="badge badge-danger bg-gradient-danger text-sm px-3 rounded-pill">Overdue (' . floor($days_overdue) . ' days)</span>';
+								} else {
+									// Bill is current/not due yet
+									$days_remaining = (strtotime($due_date) - strtotime($current_date)) / (60 * 60 * 24);
+									if($days_remaining <= 3) {
+										echo '<span class="badge badge-warning bg-gradient-warning text-sm px-3 rounded-pill">Due Soon (' . floor($days_remaining) . ' days)</span>';
+									} else {
+										echo '<span class="badge badge-info bg-gradient-info text-sm px-3 rounded-pill">Current</span>';
+									}
 								}
 								?>
                             </td>
@@ -87,7 +112,7 @@
 		})
 		$('.table').dataTable({
 			columnDefs: [
-					{ orderable: false, targets: [4] }
+					{ orderable: false, targets: [7] }  // Updated to target the Action column (now index 7)
 			],
 			order:[0,'asc']
 		});
