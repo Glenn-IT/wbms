@@ -60,9 +60,10 @@
                         </p>
                       </a>
                     </li>
-                    
-                  
 
+                 
+
+                    <li class="nav-header">Reports & Lists</li>
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=reports" class="nav-link nav-reports">
                         <i class="nav-icon fas fa-chart-bar"></i>
