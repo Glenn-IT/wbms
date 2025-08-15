@@ -103,8 +103,16 @@ function generate_meter_code($conn) {
 							</script>
 
 							<div class="form-group mb-3">
-								<label for="address" class="control-label">Zone / Street (e.g., Zone 6, Mabini Street)</label>
-								<textarea rows="3" class="form-control form-control-sm rounded-0" id="address" name="address" required="required"><?= isset($address) ? $address : '' ?></textarea>
+								<label for="address" class="control-label">Zone</label>
+								<select name="address" id="address" class="form-control form-control-sm rounded-0" required="required">
+									<option value="" disabled <?= empty($address) ? 'selected' : '' ?>>Select Zone</option>
+									<option value="Zone 1" <?= isset($address) && $address == 'Zone 1' ? 'selected' : '' ?>>Zone 1</option>
+									<option value="Zone 2" <?= isset($address) && $address == 'Zone 2' ? 'selected' : '' ?>>Zone 2</option>
+									<option value="Zone 3" <?= isset($address) && $address == 'Zone 3' ? 'selected' : '' ?>>Zone 3</option>
+									<option value="Zone 4" <?= isset($address) && $address == 'Zone 4' ? 'selected' : '' ?>>Zone 4</option>
+									<option value="Zone 5" <?= isset($address) && $address == 'Zone 5' ? 'selected' : '' ?>>Zone 5</option>
+									<option value="Zone 6" <?= isset($address) && $address == 'Zone 6' ? 'selected' : '' ?>>Zone 6</option>
+								</select>
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
 								<label for="meter_code" class="control-label">Meter ID</label>
@@ -112,12 +120,7 @@ function generate_meter_code($conn) {
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
 								<label for="first_reading" class="control-label">First Reading</label>
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<span class="input-group-text">₱</span>
-									</div>
-									<input type="number" class="form-control form-control-sm rounded-0" id="first_reading" name="first_reading" value="<?= isset($first_reading) ? $first_reading : '' ?>" step="0.01" min="0" required="required">
-								</div>
+								<input type="number" class="form-control form-control-sm rounded-0" id="first_reading" name="first_reading" value="<?= isset($first_reading) ? $first_reading : '' ?>" step="0.01" min="0" required="required">
 							</div>
 							<div class="form-group">
 								<label for="status" class="control-label">Status</label>

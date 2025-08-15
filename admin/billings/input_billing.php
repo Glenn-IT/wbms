@@ -28,17 +28,29 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						<form action="" id="billing-form">
 							<input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
 							
-							<!-- Display Client Info (readonly) -->
+							<!-- Display Meter ID (readonly) -->
 							<div class="form-group mb-3">
-								<label for="client_display" class="control-label">Client</label>
+								<label for="meter_id_display" class="control-label">Meter ID</label>
 								<?php 
 								if(isset($client_id)){
 									$client_qry = $conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', coalesce(middlename)) as `name` FROM `client_list` where id = '{$client_id}'");
 									$client_data = $client_qry->fetch_assoc();
 								}
 								?>
+								<input type="text" class="form-control form-control-sm rounded-0" readonly value="<?= isset($client_data) ? $client_data['meter_code'] : '' ?>"/>
+							</div>
+							
+							<!-- Display Client Info (readonly) -->
+							<div class="form-group mb-3">
+								<label for="client_display" class="control-label">Client</label>
 								<input type="text" class="form-control form-control-sm rounded-0" readonly value="<?= isset($client_data) ? $client_data['code']." - ".$client_data['name'] : '' ?>"/>
 								<input type="hidden" name="client_id" value="<?= isset($client_id) ? $client_id : '' ?>"/>
+							</div>
+							
+							<!-- Display Zone (readonly) -->
+							<div class="form-group mb-3">
+								<label for="zone_display" class="control-label">Zone</label>
+								<input type="text" class="form-control form-control-sm rounded-0" readonly value="<?= isset($client_data) ? $client_data['address'] : '' ?>"/>
 							</div>
 							
 							<!-- Display Reading Date (readonly) -->
@@ -68,18 +80,54 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 								<input type="text" class="form-control form-control-sm rounded-0" id="rate" name="rate" required value="<?= isset($rate) ? $rate : $_settings->info('rate') ?>"/>
 							</div>
 							
-							<!-- Editable Total Bill -->
-							<div class="form-group mb-3">
-								<label for="total" class="control-label">Total Bill</label>
-								<input type="number" step="any" class="form-control form-control-sm rounded-0 text-right" id="total" name="total" required value="<?= isset($total) ? $total : '' ?>"/>
-							</div>
-							
 							<!-- Display Due Date (readonly) -->
 							<div class="form-group mb-3">
 								<label for="due_date_display" class="control-label">Due Date</label>
 								<input type="text" class="form-control form-control-sm rounded-0" readonly value="<?= isset($due_date) ? date("Y-m-d", strtotime($due_date)) : '' ?>"/>
 								<input type="hidden" name="due_date" value="<?= isset($due_date) ? date("Y-m-d", strtotime($due_date)) : '' ?>"/>
 							</div>
+
+							<!-- Display Penalty (readonly) -->
+							<div class="form-group mb-3">
+								<label for="penalty_display" class="control-label">Penalty</label>
+								<?php 
+								$penalty = 0;
+								$penalty_rate = 5; // Default penalty rate percentage (5%)
+								
+								// Calculate penalty if due date has passed and bill is still pending
+								if(isset($due_date) && isset($status) && $status == 0) {
+									$current_date = date('Y-m-d');
+									$due_date_formatted = date('Y-m-d', strtotime($due_date));
+									
+									// Calculate base amount first
+									$base_amount = 0;
+									if(isset($reading) && isset($previous) && isset($rate)) {
+										$base_amount = ($reading - $previous) * $rate;
+									}
+									
+									if($current_date > $due_date_formatted && $base_amount > 0) {
+										$penalty = ($base_amount * $penalty_rate) / 100;
+									}
+								}
+								?>
+								<input type="text" class="form-control form-control-sm rounded-0" readonly value="<?= number_format($penalty, 2) ?>"/>
+								<input type="hidden" name="penalty" value="<?= $penalty ?>"/>
+								<small class="text-muted">
+									<?php if($penalty > 0): ?>
+										<?= $penalty_rate ?>% penalty applied for overdue payment
+									<?php else: ?>
+										<?= isset($status) && $status == 1 ? 'Paid - No penalty' : ($penalty == 0 ? 'No penalty (within due date)' : 'No penalty') ?>
+									<?php endif; ?>
+								</small>
+							</div>
+							
+							<!-- Editable Total Bill -->
+							<div class="form-group mb-3">
+								<label for="total" class="control-label">Total Bill</label>
+								<input type="number" step="any" class="form-control form-control-sm rounded-0 text-right" id="total" name="total" required value="<?= isset($total) ? $total : '' ?>"/>
+							</div>
+							
+							
 							
 							<div class="form-group">
 								<label for="status" class="control-label">Status</label>
@@ -108,11 +156,51 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 		current_reading = current_reading > 0 ? current_reading : 0;
 		rate = rate > 0 ? rate : 0;
 
-		$('#total').val((parseFloat(current_reading) - parseFloat(previous)) * parseFloat(rate))
+		var base_total = (parseFloat(current_reading) - parseFloat(previous)) * parseFloat(rate);
+		
+		// Calculate penalty if applicable (for display only)
+		var penalty = 0;
+		var penalty_rate = 5; // 5% penalty rate
+		var due_date = '<?= isset($due_date) ? date("Y-m-d", strtotime($due_date)) : "" ?>';
+		var status = <?= isset($status) ? $status : 0 ?>;
+		var current_date = new Date().toISOString().split('T')[0];
+		
+		if(due_date && status == 0 && current_date > due_date && base_total > 0) {
+			penalty = (base_total * penalty_rate) / 100;
+		}
+		
+		// Update penalty display (readonly field)
+		$('input[readonly]').filter(function(){
+			return $(this).closest('.form-group').find('label[for="penalty_display"]').length > 0;
+		}).val(penalty.toFixed(2));
+		
+		// Update penalty hidden field for form submission
+		$('input[name="penalty"]').val(penalty);
+		
+		// Update penalty description
+		var penalty_text = '';
+		if(penalty > 0) {
+			penalty_text = penalty_rate + '% penalty applied for overdue payment';
+		} else if(status == 1) {
+			penalty_text = 'Paid - No penalty';
+		} else {
+			penalty_text = 'No penalty (within due date)';
+		}
+		$('.text-muted').text(penalty_text);
+
+		// Total should include base amount + penalty
+		$('#total').val(base_total + penalty)
 	}
 	
 	$(document).ready(function(){
+		// Calculate penalty and total on page load
+		calc_total();
+		
 		$('#rate').on('input', function(){
+			calc_total()
+		})
+		
+		$('#status').on('change', function(){
 			calc_total()
 		})
 		
