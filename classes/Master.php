@@ -244,6 +244,130 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 
 	}
+	
+	function save_issue(){
+		extract($_POST);
+		$data = "";
+		
+		// Handle image upload
+		$image_path = '';
+		if(isset($_FILES['image']) && $_FILES['image']['error'] == 0){
+			$upload_dir = '../uploads/issues/';
+			if(!is_dir($upload_dir)){
+				mkdir($upload_dir, 0777, true);
+			}
+			
+			$file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+			$new_filename = date('YmdHis') . '_' . uniqid() . '.' . $file_extension;
+			$upload_path = $upload_dir . $new_filename;
+			
+			if(move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)){
+				$image_path = $new_filename;
+			}
+		}
+		
+		// If editing and removing image
+		if(!empty($id) && isset($remove_image) && $remove_image == 1){
+			$old_qry = $this->conn->query("SELECT image_path FROM `client_issue_list` WHERE id = '{$id}'");
+			if($old_qry->num_rows > 0){
+				$old_row = $old_qry->fetch_assoc();
+				if(!empty($old_row['image_path']) && file_exists('../uploads/issues/' . $old_row['image_path'])){
+					unlink('../uploads/issues/' . $old_row['image_path']);
+				}
+			}
+			$image_path = '';
+		}
+		
+		foreach($_POST as $k => $v){
+			if(!in_array($k,array('id', 'remove_image'))){
+				if(!empty($data)) $data .=",";
+				$v = $this->conn->real_escape_string($v);
+				$data .= " `{$k}`='{$v}' ";
+			}
+		}
+		
+		// Add image path to data if we have one
+		if(!empty($image_path) || (isset($remove_image) && $remove_image == 1)){
+			if(!empty($data)) $data .=",";
+			$data .= " `image_path`='{$image_path}' ";
+		}
+		
+		// If status is resolved (1), set date_resolved
+		if(isset($_POST['status']) && $_POST['status'] == 1){
+			if(!empty($data)) $data .=",";
+			$data .= " `date_resolved`=NOW() ";
+		}
+		
+		if(empty($id)){
+			$sql = "INSERT INTO `client_issue_list` set {$data} ";
+		}else{
+			$sql = "UPDATE `client_issue_list` set {$data} where id = '{$id}' ";
+		}
+		
+		$save = $this->conn->query($sql);
+		if($save){
+			$aid = !empty($id) ? $id : $this->conn->insert_id;
+			$resp['status'] = 'success';
+			$resp['aid'] = $aid;
+
+			if(empty($id))
+				$resp['msg'] = "New Issue successfully saved.";
+			else
+				$resp['msg'] = "Issue successfully updated.";
+			
+		}else{
+			$resp['status'] = 'failed';
+			$resp['err'] = $this->conn->error."[{$sql}]";
+		}
+		if($resp['status'] == 'success')
+			$this->settings->set_flashdata('success',$resp['msg']);
+		return json_encode($resp);
+	}
+	
+	function delete_issue(){
+		extract($_POST);
+		
+		// Get image path before deleting
+		$img_qry = $this->conn->query("SELECT image_path FROM `client_issue_list` WHERE id = '{$id}'");
+		if($img_qry->num_rows > 0){
+			$img_row = $img_qry->fetch_assoc();
+			if(!empty($img_row['image_path']) && file_exists('../uploads/issues/' . $img_row['image_path'])){
+				unlink('../uploads/issues/' . $img_row['image_path']);
+			}
+		}
+		
+		$del = $this->conn->query("DELETE FROM `client_issue_list` where id = '{$id}'");
+		if($del){
+			$resp['status'] = 'success';
+			$this->settings->set_flashdata('success',"Issue has been deleted successfully.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] = $this->conn->error;
+		}
+		return json_encode($resp);
+	}
+	
+	function update_issue_status(){
+		extract($_POST);
+		
+		// If marking as resolved, set the date_resolved to current timestamp
+		// If marking as pending, clear the date_resolved
+		if($status == 1) {
+			$update = $this->conn->query("UPDATE `client_issue_list` SET `status` = '{$status}', `date_resolved` = NOW() WHERE id = '{$id}'");
+		} else {
+			$update = $this->conn->query("UPDATE `client_issue_list` SET `status` = '{$status}', `date_resolved` = NULL WHERE id = '{$id}'");
+		}
+		
+		if($update){
+			$resp['status'] = 'success';
+			$status_text = $status == 1 ? 'resolved' : 'pending';
+			$this->settings->set_flashdata('success',"Issue has been marked as {$status_text}.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] = $this->conn->error;
+		}
+		return json_encode($resp);
+	}
 }
 
 $Master = new Master();
@@ -276,6 +400,15 @@ switch ($action) {
 	break;
 	case 'delete_billing':
 		echo $Master->delete_billing();
+	break;
+	case 'save_issue':
+		echo $Master->save_issue();
+	break;
+	case 'delete_issue':
+		echo $Master->delete_issue();
+	break;
+	case 'update_issue_status':
+		echo $Master->update_issue_status();
 	break;
 	default:
 		// echo $sysset->index();

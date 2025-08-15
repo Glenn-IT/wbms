@@ -52,10 +52,10 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-clients_issue">
+                      <a href="<?php echo base_url ?>admin/?page=client_issue" class="nav-link nav-client_issue">
                         <i class="nav-icon fas fa-exclamation-triangle"></i>
                         <p>
-                          Clients Issue
+                          Client Issues
                         </p>
                       </a>
                     </li>
