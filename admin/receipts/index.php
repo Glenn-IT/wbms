@@ -45,13 +45,9 @@
 							<td><?php echo $row['code'] ." - ".$row['name'] ?></td>
 							<td><?php echo $row['zone'] ?></td>
 							<td align="center">
-								 <button type="button" class="btn btn-flat p-1 btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
-				                  		Action
-				                    <span class="sr-only">Toggle Dropdown</span>
-				                  </button>
-				                  <div class="dropdown-menu" role="menu">
-				                    <a class="dropdown-item view_receipt" href="./?page=receipts/view_receipt&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-primary"></span> View</a>
-				                  </div>
+								<a class="btn btn-primary btn-sm" href="./?page=receipts/view_receipt&id=<?php echo $row['id'] ?>">
+									<span class="fa fa-eye"></span> View
+								</a>
 							</td>
 						</tr>
 					<?php endwhile; ?>
