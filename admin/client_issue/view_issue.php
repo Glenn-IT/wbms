@@ -151,39 +151,79 @@ $row = $qry->fetch_assoc();
     </div>
 </div>
 
+<!-- Print Button within the modal content for better accessibility -->
+<div class="row mt-3">
+    <div class="col-md-12 text-center">
+        <button type="button" class="btn btn-info btn-lg" id="print_issue_btn">
+            <i class="fas fa-print"></i> Print Issue Details
+        </button>
+    </div>
+</div>
+
 <script>
 $(document).ready(function(){
-    $('#print_btn').click(function(){
+    // Print button functionality (works with both buttons)
+    $('#print_btn, #print_issue_btn').click(function(){
         var printContents = $('#uni_modal .modal-body').html();
-        var originalContents = document.body.innerHTML;
         
         var printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-            <head>
-                <title>Issue Details - ISS-<?php echo str_pad($row['id'], 4, '0', STR_PAD_LEFT) ?></title>
-                <link rel="stylesheet" href="<?php echo base_url ?>plugins/bootstrap/css/bootstrap.min.css">
-                <style>
-                    @media print {
-                        .form-control-plaintext { border-bottom: 1px solid #000 !important; }
-                        .border { border: 1px solid #000 !important; }
-                        body { font-size: 12px; }
-                    }
-                    .form-group { margin-bottom: 15px; }
-                    .control-label { font-weight: bold; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h3 class="text-center mb-4">Client Issue Details</h3>
-                    <h4 class="text-center mb-4">Issue ID: ISS-<?php echo str_pad($row['id'], 4, '0', STR_PAD_LEFT) ?></h4>
-                    ${printContents}
-                </div>
-            </body>
-            </html>
-        `);
+        var issueId = 'ISS-<?php echo str_pad($row['id'], 4, '0', STR_PAD_LEFT) ?>';
+        var issueTitle = '<?php echo addslashes(htmlspecialchars($row['issue_title'])) ?>';
+        var baseUrl = '<?php echo base_url ?>';
+        
+        var printHTML = '<html>' +
+            '<head>' +
+                '<title>Issue Details - ' + issueId + '</title>' +
+                '<link rel="stylesheet" href="' + baseUrl + 'plugins/bootstrap/css/bootstrap.min.css">' +
+                '<style>' +
+                    '@media print {' +
+                        '.form-control-plaintext { border-bottom: 1px solid #000 !important; }' +
+                        '.border { border: 1px solid #000 !important; }' +
+                        'body { font-size: 12px; }' +
+                        '.btn { display: none !important; }' +
+                    '}' +
+                    '.form-group { margin-bottom: 15px; }' +
+                    '.control-label { font-weight: bold; }' +
+                    '.company-header {' +
+                        'text-align: center;' +
+                        'margin-bottom: 30px;' +
+                        'border-bottom: 2px solid #000;' +
+                        'padding-bottom: 15px;' +
+                    '}' +
+                    '.issue-header {' +
+                        'background-color: #f8f9fa;' +
+                        'padding: 15px;' +
+                        'border: 1px solid #000;' +
+                        'margin-bottom: 20px;' +
+                    '}' +
+                '</style>' +
+            '</head>' +
+            '<body>' +
+                '<div class="container">' +
+                    '<div class="company-header">' +
+                        '<h2>Water Billing Management System</h2>' +
+                        '<h3>Client Issue Report</h3>' +
+                        '<p>Generated on: ' + new Date().toLocaleString() + '</p>' +
+                    '</div>' +
+                    '<div class="issue-header">' +
+                        '<h4>Issue ID: ' + issueId + '</h4>' +
+                        '<p><strong>Issue Title:</strong> ' + issueTitle + '</p>' +
+                    '</div>' +
+                    printContents +
+                '</div>' +
+                '<script>' +
+                    'window.onload = function() {' +
+                        'window.print();' +
+                        'window.onafterprint = function() {' +
+                            'window.close();' +
+                        '}' +
+                    '}' +
+                '</scr' + 'ipt>' +
+            '</body>' +
+        '</html>';
+        
+        printWindow.document.write(printHTML);
         printWindow.document.close();
-        printWindow.print();
     });
 });
 </script>
