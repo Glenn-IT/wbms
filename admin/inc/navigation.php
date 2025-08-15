@@ -82,7 +82,7 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-reports_monthly_billing">
+                      <a href="<?php echo base_url ?>admin/?page=due_list" class="nav-link nav-due_list">
                         <i class="nav-icon fas fa-info-circle"></i>
                         <p>
                          List of Due

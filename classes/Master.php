@@ -231,6 +231,24 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 	}
 	
+	function get_bill_details(){
+		extract($_POST);
+		$qry = $this->conn->query("SELECT b.*, c.code, c.meter_code, c.contact, c.address,
+								   concat(c.lastname, ', ', c.firstname, ' ', coalesce(c.middlename,'')) as `client_name` 
+								   FROM `billing_list` b 
+								   INNER JOIN client_list c ON b.client_id = c.id 
+								   WHERE b.id = '{$id}'");
+		
+		if($qry->num_rows > 0){
+			$resp['status'] = 'success';
+			$resp['data'] = $qry->fetch_assoc();
+		}else{
+			$resp['status'] = 'failed';
+			$resp['msg'] = 'Bill not found.';
+		}
+		return json_encode($resp);
+	}
+	
 	function delete_billing(){
 		extract($_POST);
 		$del = $this->conn->query("DELETE FROM `billing_list` where id = '{$id}'");
@@ -397,6 +415,9 @@ switch ($action) {
 	break;
 	case 'get_billing_history':
 		echo $Master->get_billing_history();
+	break;
+	case 'get_bill_details':
+		echo $Master->get_bill_details();
 	break;
 	case 'delete_billing':
 		echo $Master->delete_billing();
