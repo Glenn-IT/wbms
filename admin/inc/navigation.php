@@ -61,7 +61,7 @@
                       </a>
                     </li>
                     
-                    <li class="nav-header">Reports</li>
+                  
 
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=reports" class="nav-link nav-reports">
@@ -102,17 +102,18 @@
   
 
                     <?php if($_settings->userdata('type') == 1): ?>
-                    <li class="nav-header">Maintenance</li>
+                    
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-about_us">
+                     <a href="<?php echo base_url ?>admin/?page=aboutus" class="nav-link nav-aboutus">
                         <i class="nav-icon fas fa-info-circle"></i>
                         <p>
                           About us
                         </p>
                       </a>
                     </li>
+                    
                     <li class="nav-item dropdown">
-                      <a href="#" class="nav-link nav-user_manual">
+                      <a href="<?php echo base_url ?>admin/?page=users_manual" class="nav-link nav-users_manual">
                         <i class="nav-icon fas fa-book"></i>
                         <p>
                           User's Manual
