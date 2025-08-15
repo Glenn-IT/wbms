@@ -122,6 +122,12 @@ Class Master extends DBConnection {
 			$resp['status'] = 'success';
 			$resp['aid'] = $aid;
 
+			// Fetch the saved client data for immediate table update
+			$client_query = $this->conn->query("SELECT *, CONCAT(lastname, ', ', firstname, ' ', COALESCE(middlename,'')) AS fullname FROM client_list WHERE id = '{$aid}'");
+			if($client_query && $client_query->num_rows > 0) {
+				$resp['client_data'] = $client_query->fetch_assoc();
+			}
+
 			if(empty($id))
 				$resp['msg'] = "New Client successfully saved.";
 			else
@@ -131,9 +137,7 @@ Class Master extends DBConnection {
 			$resp['status'] = 'failed';
 			$resp['err'] = $this->conn->error."[{$sql}]";
 		}
-		if($resp['status'] == 'success')
-			$this->settings->set_flashdata('success',$resp['msg']);
-			return json_encode($resp);
+		return json_encode($resp);
 	}
 	function delete_client(){
 		extract($_POST);

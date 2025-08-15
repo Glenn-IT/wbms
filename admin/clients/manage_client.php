@@ -220,13 +220,45 @@ $(document).ready(function(){
                 end_loader();
             },
             success:function(resp){
+                console.log('Save response:', resp);
                 if(typeof resp == 'object' && resp.status == 'success'){
                     alert_toast("Client details saved successfully.",'success');
                     end_loader();
-                    // Refresh the page to stay on the same page
-                    setTimeout(function(){
-                        location.reload();
-                    }, 1500);
+                    
+                    // Add the new client to the table if it's a new client and we have client data
+                    if(!$('#id').val() && resp.client_data) {
+                        var table = $('#client-table').DataTable();
+                        var statusBadge = resp.client_data.status == 1 ? 
+                            '<span class="badge badge-primary bg-gradient-primary">Active</span>' :
+                            '<span class="badge badge-danger bg-gradient-danger">Inactive</span>';
+                        
+                        // Add new row to the beginning of the table
+                        table.row.add([
+                            table.rows().count() + 1,
+                            resp.client_data.code,
+                            resp.client_data.fullname,
+                            resp.client_data.contact,
+                            resp.client_data.address,
+                            resp.client_data.meter_code,
+                            statusBadge
+                        ]).draw(false);
+                        
+                        // Reorder table to show newest first (since we order by date_created DESC)
+                        table.order([0, 'desc']).draw();
+                    } else {
+                        // For updates or if no client data, refresh the table
+                        updateClientTable();
+                    }
+                    
+                    // Clear the form for new entries
+                    if(!$('#id').val()) {
+                        $('#client-form')[0].reset();
+                        // Generate new meter code for next client
+                        generateNewMeterCode();
+                        // Reset category to Residential
+                        $('#category_id').val('<?= $residential_id ?>').trigger('change');
+                    }
+                    
                 }
                 else if(resp.status == 'failed' && !!resp.msg){
                     var el = $('<div>').addClass("alert alert-danger err-msg").text(resp.msg)
@@ -250,5 +282,67 @@ $(document).ready(function(){
         "ordering": true,
         "info": false
     });
+    
+    // Function to update client table without page reload
+    function updateClientTable() {
+        $.ajax({
+            url: "./get_clients.php",
+            method: 'GET',
+            dataType: 'json',
+            success: function(resp) {
+                console.log('Client update response:', resp);
+                if(resp.status == 'success') {
+                    var table = $('#client-table').DataTable();
+                    table.clear();
+                    
+                    $.each(resp.data, function(index, client) {
+                        var statusBadge = client.status == 1 ? 
+                            '<span class="badge badge-primary bg-gradient-primary">Active</span>' :
+                            '<span class="badge badge-danger bg-gradient-danger">Inactive</span>';
+                            
+                        table.row.add([
+                            index + 1,
+                            client.code,
+                            client.fullname,
+                            client.contact,
+                            client.address,
+                            client.meter_code,
+                            statusBadge
+                        ]);
+                    });
+                    
+                    table.draw();
+                } else {
+                    console.log('Failed to update client table:', resp);
+                }
+            },
+            error: function(err) {
+                console.log('Error updating client table:', err);
+                // Fallback: reload the page if AJAX fails
+                setTimeout(function(){
+                    location.reload();
+                }, 1000);
+            }
+        });
+    }
+    
+    // Function to generate new meter code
+    function generateNewMeterCode() {
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var numbers = '0123456789';
+        var random = '';
+
+        // Generate 2 random letters
+        for (var i = 0; i < 2; i++) {
+            random += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        // Generate 3 random numbers
+        for (var i = 0; i < 3; i++) {
+            random += numbers.charAt(Math.floor(Math.random() * numbers.length));
+        }
+
+        $('#meter_code').val(random);
+    }
 });
 </script>

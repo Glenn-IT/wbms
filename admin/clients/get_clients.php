@@ -11,8 +11,8 @@ try {
         $data[] = $row;
     }
     
-    echo json_encode(array("data" => $data));
+    echo json_encode(array("status" => "success", "data" => $data));
 } catch (Exception $e) {
-    echo json_encode(array("data" => array(), "error" => $e->getMessage()));
+    echo json_encode(array("status" => "error", "data" => array(), "message" => $e->getMessage()));
 }
 ?>
