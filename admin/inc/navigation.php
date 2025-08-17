@@ -121,6 +121,15 @@
                         </p>
                       </a>
                     </li>
+
+                    <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=devs" class="nav-link nav-devs">
+                        <i class="nav-icon fas fa-code"></i>
+                        <p>
+                          Developer's Information
+                        </p>
+                      </a>
+                    </li>
                    
                     <!--<li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=system_info" class="nav-link nav-system_info">
