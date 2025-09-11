@@ -112,6 +112,7 @@ function generate_meter_code($conn) {
 									<option value="Zone 4" <?= isset($address) && $address == 'Zone 4' ? 'selected' : '' ?>>Zone 4</option>
 									<option value="Zone 5" <?= isset($address) && $address == 'Zone 5' ? 'selected' : '' ?>>Zone 5</option>
 									<option value="Zone 6" <?= isset($address) && $address == 'Zone 6' ? 'selected' : '' ?>>Zone 6</option>
+                                    <option value="Zone 7" <?= isset($address) && $address == 'Zone 7' ? 'selected' : '' ?>>Zone 7</option>
 								</select>
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">

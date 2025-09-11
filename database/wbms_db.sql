@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 15, 2025 at 08:19 AM
+-- Generation Time: Aug 31, 2025 at 11:39 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,7 +48,8 @@ CREATE TABLE `billing_list` (
 
 INSERT INTO `billing_list` (`id`, `client_id`, `reading_date`, `due_date`, `reading`, `previous`, `rate`, `total`, `penalty`, `status`, `date_created`, `date_updated`) VALUES
 (7, 15, '2025-08-15', '2025-09-15', 30.00, 0.00, 10.75, 322.50, 0.00, 1, '2025-08-15 13:14:59', '2025-08-15 13:16:32'),
-(10, 15, '2025-08-15', '2025-09-15', 25.00, 0.00, 10.75, 268.75, 0.00, 1, '2025-08-15 13:48:26', '2025-08-15 14:16:46');
+(10, 15, '2025-08-15', '2025-09-15', 25.00, 0.00, 10.75, 268.75, 0.00, 1, '2025-08-15 13:48:26', '2025-08-15 14:16:46'),
+(11, 14, '2025-07-15', '2025-08-14', 23.00, 0.00, 10.75, 247.25, 0.00, 0, '2025-08-15 15:36:13', '2025-08-15 15:36:13');
 
 -- --------------------------------------------------------
 
@@ -72,6 +73,34 @@ CREATE TABLE `category_list` (
 INSERT INTO `category_list` (`id`, `name`, `status`, `delete_flag`, `date_created`, `date_updated`) VALUES
 (1, 'Residential', 1, 0, '2022-05-02 15:13:02', '2022-05-02 15:13:02'),
 (2, 'Commercial', 1, 0, '2022-05-02 15:13:09', '2022-05-02 15:13:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `client_issue_list`
+--
+
+CREATE TABLE `client_issue_list` (
+  `id` int(30) NOT NULL,
+  `client_id` int(30) NOT NULL,
+  `issue_title` varchar(255) NOT NULL,
+  `remarks` text DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=Pending, 1=Resolved',
+  `date_resolved` datetime DEFAULT NULL,
+  `date_created` datetime NOT NULL DEFAULT current_timestamp(),
+  `date_updated` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_issue_list`
+--
+
+INSERT INTO `client_issue_list` (`id`, `client_id`, `issue_title`, `remarks`, `image_path`, `status`, `date_resolved`, `date_created`, `date_updated`) VALUES
+(1, 14, 'Water Meter Not Working', 'Customer reported that the water meter stopped functioning properly. Need to inspect and repair or replace.', '20250815145656_689eda38e89e6.jpg', 0, NULL, '2025-08-15 14:56:06', '2025-08-15 14:56:56'),
+(2, 15, 'Billing Discrepancy', 'Customer disputes the current billing amount. Claims usage reading is incorrect.', NULL, 1, '2025-08-15 15:05:42', '2025-08-15 14:56:06', '2025-08-15 15:05:42'),
+(3, 16, 'Leak in Connection', 'Water leak detected near the meter connection. Requires immediate attention to prevent water wastage.', NULL, 1, '2025-08-15 14:56:43', '2025-08-15 14:56:06', '2025-08-15 14:58:27'),
+(4, 14, 'Oks wer', 'skpdwm', '20250815150036_689edb1408efd.jpg', 0, NULL, '2025-08-15 15:00:36', '2025-08-15 15:00:36');
 
 -- --------------------------------------------------------
 
@@ -188,6 +217,13 @@ ALTER TABLE `category_list`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `client_issue_list`
+--
+ALTER TABLE `client_issue_list`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `client_id` (`client_id`);
+
+--
 -- Indexes for table `client_list`
 --
 ALTER TABLE `client_list`
@@ -214,13 +250,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `billing_list`
 --
 ALTER TABLE `billing_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `category_list`
 --
 ALTER TABLE `category_list`
   MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `client_issue_list`
+--
+ALTER TABLE `client_issue_list`
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `client_list`
@@ -249,6 +291,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `billing_list`
   ADD CONSTRAINT `client_id_fk_bl` FOREIGN KEY (`client_id`) REFERENCES `client_list` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `client_issue_list`
+--
+ALTER TABLE `client_issue_list`
+  ADD CONSTRAINT `client_issue_list_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `client_list` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `client_list`
