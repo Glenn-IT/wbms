@@ -1,4 +1,3 @@
-
 <?php if($_settings->chk_flashdata('success')): ?>
 <script>
 	alert_toast("<?php echo $_settings->flashdata('success') ?>",'success')
@@ -18,7 +17,6 @@
 					<col width="5%">
 					<col width="15%">
 					<col width="25%">
-					<col width="25%">
 					<col width="15%">
 					<col width="15%">
 				</colgroup>
@@ -26,8 +24,8 @@
 					<tr>
 						<th>#</th>
 						<th>Date Created</th>
-						<th>Code</th>
 						<th>Name</th>
+						<th>Meter ID</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -41,8 +39,8 @@
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
 							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
-							<td><?php echo $row['code'] ?></td>
 							<td><?php echo $row['name'] ?></td>
+							<td><?php echo $row['meter_code'] ?></td>
 							<td class="text-center">
 								<?php
 								switch($row['status']){
