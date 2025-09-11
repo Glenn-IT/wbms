@@ -6,9 +6,9 @@
 <div class="card card-outline rounded-0 card-navy">
 	<div class="card-header">
 		<h3 class="card-title">List of Due Bills</h3>
-		<!--<div class="card-tools">
-			<a href="./?page=billings/manage_billing" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Create New Bill</a>
-		</div>-->
+		<div class="card-tools">
+			<button id="printAllDue" class="btn btn-flat btn-success"><span class="fa fa-print"></span> Print All Due</button>
+		</div>
 	</div>
 	<div class="card-body">
         <div class="container-fluid">
@@ -229,6 +229,44 @@
 			window.print();
 			document.body.innerHTML = originalContents;
 			location.reload();
+		});
+		
+		$('#printAllDue').click(function(){
+			let printWindow = window.open('', '', 'height=800,width=1200');
+			let doc = printWindow.document;
+			let headerHtml = `<div style='text-align:center;margin-bottom:10px;'>
+		<h2 style='margin:0;'>Barangay Catarauan, Piat, Cagayan</h2>
+		<h4 style='margin:0;'>WATER BILLING SYSTEM</h4>
+		<p style='margin:0;'>List of Due Bills</p>
+	</div>`;
+			let tableHtml = `<table border='1' cellspacing='0' cellpadding='5' style='width:100%;border-collapse:collapse;'>`;
+			tableHtml += `<thead><tr>
+				<th>#</th>
+				<th>Meter ID</th>
+				<th>Name</th>
+				<th>Reading Date</th>
+				<th>Due Date</th>
+				<th>Amount</th>
+				<th>Days Overdue</th>
+			</tr></thead><tbody>`;
+			$('#list tbody tr').each(function(){
+				let tds = $(this).find('td');
+				tableHtml += '<tr>';
+				for(let i=0;i<7;i++){
+					tableHtml += `<td>${tds.eq(i).html()}</td>`;
+				}
+				tableHtml += '</tr>';
+			});
+			tableHtml += '</tbody></table>';
+			doc.write('<html><head><title>Print All Due Bills</title>');
+			doc.write('<style>table{font-size:14px;} th,td{text-align:center;}</style>');
+			doc.write('</head><body>');
+			doc.write(headerHtml);
+			doc.write(tableHtml);
+			doc.write('</body></html>');
+			doc.close();
+			printWindow.focus();
+			setTimeout(function(){ printWindow.print(); printWindow.close(); }, 500);
 		});
 		
 		$('.table').dataTable({
