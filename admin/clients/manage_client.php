@@ -117,7 +117,8 @@ function generate_meter_code($conn) {
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
 								<label for="meter_code" class="control-label">Meter ID</label>
-								<input type="text" class="form-control form-control-sm rounded-0" id="meter_code" name="meter_code" value="<?= isset($meter_code) ? $meter_code : generate_meter_code($conn) ?>" readonly required="required">
+								<input type="text" class="form-control form-control-sm rounded-0" id="meter_code" name="meter_code" value="<?= isset($meter_code) ? $meter_code : '' ?>" required="required" maxlength="9" pattern="[A-Z0-9]{9}" title="Please enter exactly 9 uppercase letters and numbers (no spaces or special characters)">
+								<div id="meter_code_feedback" class="invalid-feedback"></div>
 							</div>
 							<div class="form-group p-0 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3" style="display: none;">
 								<label for="first_reading" class="control-label">First Reading</label>
@@ -345,5 +346,37 @@ $(document).ready(function(){
 
         $('#meter_code').val(random);
     }
+
+    // Meter ID validation: only allow uppercase alphanumeric, max 9 chars
+    $('#meter_code').on('input', function() {
+        let val = $(this).val().replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 9);
+        $(this).val(val);
+    });
+
+    // AJAX check for duplicate Meter ID
+    $('#meter_code').on('blur', function() {
+        var meter_code = $(this).val();
+        var id = $('#id').val();
+        if(meter_code.length === 9) {
+            $.get('./clients/check_meter_code.php', { meter_code: meter_code, id: id }, function(resp) {
+                try {
+                    var data = JSON.parse(resp);
+                    if(data.status === 'duplicate') {
+                        $('#meter_code')[0].setCustomValidity('Duplicate Meter ID. Please enter a unique value.');
+                        $('#meter_code_feedback').text('Duplicate Meter ID. Please enter a unique value.').show();
+                    } else {
+                        $('#meter_code')[0].setCustomValidity('');
+                        $('#meter_code_feedback').text('').hide();
+                    }
+                } catch(e) {
+                    $('#meter_code')[0].setCustomValidity('Error checking Meter ID.');
+                    $('#meter_code_feedback').text('Error checking Meter ID.').show();
+                }
+            });
+        } else {
+            $('#meter_code')[0].setCustomValidity('Please enter exactly 9 uppercase letters and numbers.');
+            $('#meter_code_feedback').text('Please enter exactly 9 uppercase letters and numbers.').show();
+        }
+    });
 });
 </script>
