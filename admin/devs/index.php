@@ -25,11 +25,11 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <div class="profile-user-img img-fluid img-circle" 
-                             style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                                    display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 40px;">
-                            <i class="fas fa-user"></i>
-                        </div>
+                        <img class="profile-user-img img-fluid img-circle" 
+                             src="/wbms/uploads/Jomari.jpg" 
+                             alt="Jomari Estrada"
+                             style="width: 100px; height: 100px; object-fit: cover;"
+                             onerror="this.style.display='none'; console.error('Image failed to load:', this.src)">
                         <h3 class="profile-username text-center mt-2">Jomari Estrada</h3>
                         <p class="text-muted text-center">Full Stack Developer</p>
                     </div>
@@ -115,11 +115,11 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <div class="profile-user-img img-fluid img-circle" 
-                             style="width: 100px; height: 100px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
-                                    display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 40px;">
-                            <i class="fas fa-user"></i>
-                        </div>
+                        <img class="profile-user-img img-fluid img-circle" 
+                             src="/wbms/uploads/Lyca.jpg" 
+                             alt="Lyca Durian"
+                             style="width: 100px; height: 100px; object-fit: cover;"
+                             onerror="this.style.display='none'; console.error('Image failed to load:', this.src)">
                         <h3 class="profile-username text-center mt-2">Lyca Durian</h3>
                         <p class="text-muted text-center">Frontend Developer</p>
                     </div>
