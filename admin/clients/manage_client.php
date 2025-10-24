@@ -19,8 +19,8 @@ function generate_meter_code($conn) {
         $random .= $characters[rand(0, strlen($characters) - 1)];
     }
 
-    // Generate 3 random numbers
-    for ($i = 0; $i < 3; $i++) {
+    // Generate 7 random numbers (changed from 3 to make it 9 characters total)
+    for ($i = 0; $i < 7; $i++) {
         $random .= $numbers[rand(0, strlen($numbers) - 1)];
     }
 
@@ -31,6 +31,11 @@ function generate_meter_code($conn) {
     }
 
     return $random;
+}
+
+// Generate meter code for new clients
+if (!isset($id)) {
+    $meter_code = generate_meter_code($conn);
 }
 
 ?>
@@ -339,15 +344,16 @@ $(document).ready(function(){
             random += characters.charAt(Math.floor(Math.random() * characters.length));
         }
 
-        // Generate 3 random numbers
-        for (var i = 0; i < 3; i++) {
+        // Generate 7 random numbers (to make total 9 characters)
+        for (var i = 0; i < 7; i++) {
             random += numbers.charAt(Math.floor(Math.random() * numbers.length));
         }
 
         $('#meter_code').val(random);
     }
 
-    // Meter ID validation: only allow uppercase alphanumeric, max 9 chars
+    // Meter ID validation: only allow uppercase alphanumeric, max 9 chars (disabled for auto-generation)
+    // Note: Field is now readonly, but keeping validation for consistency
     $('#meter_code').on('input', function() {
         let val = $(this).val().replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 9);
         $(this).val(val);
