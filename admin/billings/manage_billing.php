@@ -70,7 +70,10 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							</div>
 							<div class="form-group mb-3">
 								<label for="reading" class="control-label">Current Reading</label>
-								<input type="text" class="form-control form-control-sm rounded-0" id="reading" name="reading" required="required" value="<?= isset($reading) ? $reading : '' ?>"/>
+								<input type="text" class="form-control form-control-sm rounded-0" id="reading" name="reading" required="required" maxlength="4" inputmode="numeric" pattern="\d{1,4}" title="Please enter 1-4 digits only" value="<?= isset($reading) ? $reading : '' ?>"/>
+								<small class="form-text text-muted">
+									<i class="fa fa-info-circle"></i> Enter 1-4 digits only
+								</small>
 							</div>
 							<div class="form-group mb-3">
 								<label for="rate" class="control-label">Rate per Cubic Meter (m<sup>3</sup>)</label>
@@ -156,6 +159,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			$('#total').val('')
 		})
 		$('#reading').on('input', function(){
+			// Allow only numbers and limit to 4 digits
+			let val = $(this).val().replace(/\D/g, '').slice(0, 4);
+			$(this).val(val);
 			calc_total()
 		})
 		$('#billing-form').submit(function(e){
