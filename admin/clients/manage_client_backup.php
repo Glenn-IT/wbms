@@ -1,6 +1,25 @@
 <?php
 if(isset($_GET['id']) && $_GET['id'] > 0){
-    $qry = $conn->query("SELECT * from `client_list` where id = '{$_GET['id']}' ");
+    $qry = $conn->query("SELECT * from `client_list` 						document.getElementById('contact').addEventListener('input', function () {
+						    this.value = this.value.replace(/\D/g, '').slice(0, 11);
+						});
+						</script>
+
+						<div class="form-group mb-3">
+						    <label for="email" class="control-label">Email Address</label>
+						    <input type="email" 
+						           class="form-control form-control-sm rounded-0" 
+						           id="email" 
+						           name="email" 
+						           placeholder="example@gmail.com"
+						           value="<?= isset($email) ? $email : '' ?>"/>
+						    <small class="form-text text-muted">
+						        <i class="fa fa-info-circle"></i> Required for email notifications about billing due dates
+						    </small>
+						</div>
+
+						<div class="form-group mb-3">
+							<label for="address" class="control-label">Zone</label>d = '{$_GET['id']}' ");
     if($qry->num_rows > 0){
         foreach($qry->fetch_assoc() as $k => $v){
             $$k=$v;
@@ -57,7 +76,7 @@ if (!isset($id)) {
 					<div class="container-fluid">
 						<form action="" id="client-form">
 							<input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
-							<?php
+							<?php 
 							// Fetch the Residential category ID
 							$residential_qry = $conn->query("SELECT id FROM `category_list` WHERE name = 'Residential' AND delete_flag = 0 AND status = 1 LIMIT 1");
 							$residential_id = ($residential_qry && $residential_qry->num_rows > 0) ? $residential_qry->fetch_assoc()['id'] : '';
@@ -67,7 +86,7 @@ if (!isset($id)) {
 								<label for="category_id" class="control-label">Category</label>
 								<select name="category_id" id="category_id" class="form-control form-control-sm rounded-0" required="required">
 									<option value="" disabled <?= empty($category_id) ? 'selected' : '' ?>></option>
-									<?php
+									<?php 
 									$category_qry = $conn->query("SELECT * FROM `category_list` WHERE delete_flag = 0 AND `status` = 1");
 									while($row = $category_qry->fetch_assoc()):
 									?>
@@ -90,14 +109,14 @@ if (!isset($id)) {
 							</div>
 							<div class="form-group mb-3">
 							    <label for="contact" class="control-label">Contact #</label>
-							    <input type="text"
-							           class="form-control form-control-sm rounded-0"
-							           id="contact"
-							           name="contact"
-							           required
+							    <input type="text" 
+							           class="form-control form-control-sm rounded-0" 
+							           id="contact" 
+							           name="contact" 
+							           required 
 							           maxlength="11"
-							           inputmode="numeric"
-							           pattern="\d{11}"
+							           inputmode="numeric" 
+							           pattern="\d{11}" 
 							           title="Please enter exactly 11 digits"
 							           value="<?= isset($contact) ? $contact : '' ?>"/>
 							</div>
@@ -106,19 +125,6 @@ if (!isset($id)) {
 							    this.value = this.value.replace(/\D/g, '').slice(0, 11);
 							});
 							</script>
-
-							<div class="form-group mb-3">
-							    <label for="email" class="control-label">Email Address</label>
-							    <input type="email"
-							           class="form-control form-control-sm rounded-0"
-							           id="email"
-							           name="email"
-							           placeholder="example@gmail.com"
-							           value="<?= isset($email) ? $email : '' ?>"/>
-							    <small class="form-text text-muted">
-							        <i class="fa fa-info-circle"></i> Required for email notifications about billing due dates
-							    </small>
-							</div>
 
 							<div class="form-group mb-3">
 								<label for="address" class="control-label">Zone</label>
@@ -180,7 +186,7 @@ if (!isset($id)) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
+                            <?php 
                             $clients = $conn->query("SELECT *, CONCAT(lastname, ', ', firstname, ' ', COALESCE(middlename,'')) AS fullname FROM client_list WHERE delete_flag = 0 ORDER BY date_created DESC");
                             $i=1;
                             while($row = $clients->fetch_assoc()):
@@ -252,18 +258,18 @@ $(document).ready(function(){
                 if(typeof resp == 'object' && resp.status == 'success'){
                     alert_toast("Client details saved successfully.",'success');
                     end_loader();
-
+                    
                     // Add the new client to the table if it's a new client and we have client data
                     if(!$('#id').val() && resp.client_data) {
                         var table = $('#client-table').DataTable();
-                        var statusBadge = resp.client_data.status == 1 ?
+                        var statusBadge = resp.client_data.status == 1 ? 
                             '<span class="badge badge-primary bg-gradient-primary">Active</span>' :
                             '<span class="badge badge-danger bg-gradient-danger">Inactive</span>';
-
-                        var emailDisplay = resp.client_data.email ?
+                        
+                        var emailDisplay = resp.client_data.email ? 
                             '<small><i class="fa fa-envelope text-success"></i> ' + resp.client_data.email + '</small>' :
                             '<small class="text-muted">No email</small>';
-
+                        
                         // Add new row to the beginning of the table
                         table.row.add([
                             table.rows().count() + 1,
@@ -275,14 +281,14 @@ $(document).ready(function(){
                             resp.client_data.meter_code,
                             statusBadge
                         ]).draw(false);
-
+                        
                         // Reorder table to show newest first (since we order by date_created DESC)
                         table.order([0, 'desc']).draw();
                     } else {
                         // For updates or if no client data, refresh the table
                         updateClientTable();
                     }
-
+                    
                     // Clear the form for new entries
                     if(!$('#id').val()) {
                         $('#client-form')[0].reset();
@@ -291,7 +297,7 @@ $(document).ready(function(){
                         // Reset category to Residential
                         $('#category_id').val('<?= $residential_id ?>').trigger('change');
                     }
-
+                    
                 }
                 else if(resp.status == 'failed' && !!resp.msg){
                     var el = $('<div>').addClass("alert alert-danger err-msg").text(resp.msg)
@@ -315,7 +321,7 @@ $(document).ready(function(){
         "ordering": true,
         "info": false
     });
-
+    
     // Function to update client table without page reload
     function updateClientTable() {
         $.ajax({
@@ -327,16 +333,16 @@ $(document).ready(function(){
                 if(resp.status == 'success') {
                     var table = $('#client-table').DataTable();
                     table.clear();
-
+                    
                     $.each(resp.data, function(index, client) {
-                        var statusBadge = client.status == 1 ?
+                        var statusBadge = client.status == 1 ? 
                             '<span class="badge badge-primary bg-gradient-primary">Active</span>' :
                             '<span class="badge badge-danger bg-gradient-danger">Inactive</span>';
-
-                        var emailDisplay = client.email ?
+                        
+                        var emailDisplay = client.email ? 
                             '<small><i class="fa fa-envelope text-success"></i> ' + client.email + '</small>' :
                             '<small class="text-muted">No email</small>';
-
+                            
                         table.row.add([
                             index + 1,
                             client.code,
@@ -348,7 +354,7 @@ $(document).ready(function(){
                             statusBadge
                         ]);
                     });
-
+                    
                     table.draw();
                 } else {
                     console.log('Failed to update client table:', resp);
@@ -363,7 +369,7 @@ $(document).ready(function(){
             }
         });
     }
-
+    
     // Function to generate new meter code
     function generateNewMeterCode() {
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

@@ -7,6 +7,7 @@
 	<div class="card-header">
 		<h3 class="card-title">List of Due Bills</h3>
 		<div class="card-tools">
+			<button id="sendAllNotifications" class="btn btn-flat btn-primary"><span class="fa fa-envelope"></span> Send Email Notifications</button>
 			<button id="printAllDue" class="btn btn-flat btn-success"><span class="fa fa-print"></span> Print All Due</button>
 		</div>
 	</div>
@@ -41,7 +42,7 @@
 					$current_date = date('Y-m-d');
 					
 					// Query to show only overdue bills (unpaid bills past their due date)
-					$qry = $conn->query("SELECT b.*, c.code, c.meter_code, 
+					$qry = $conn->query("SELECT b.*, c.code, c.meter_code, c.email,
 										concat(c.lastname, ', ', c.firstname, ' ', coalesce(c.middlename,'')) as `name`,
 										DATEDIFF('$current_date', b.due_date) as days_overdue
 										FROM `billing_list` b 
@@ -55,7 +56,14 @@
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
 							<td><?php echo $row['meter_code'] ?></td>
-							<td><?php echo $row['code'] ." - ".$row['name'] ?></td>
+							<td>
+								<?php echo $row['code'] ." - ".$row['name'] ?>
+								<?php if(!empty($row['email'])): ?>
+									<br><small class="text-muted"><i class="fa fa-envelope"></i> <?php echo $row['email'] ?></small>
+								<?php else: ?>
+									<br><small class="text-danger"><i class="fa fa-exclamation-triangle"></i> No email</small>
+								<?php endif; ?>
+							</td>
 							<td><?php echo date("Y-m-d",strtotime($row['reading_date'])) ?></td>
 							<td><?php echo date("Y-m-d",strtotime($row['due_date'])) ?></td>
 							<td class="text-right"><?php echo "₱" . number_format($row['total'], 2) ?></td>
@@ -72,6 +80,10 @@
 				                  <div class="dropdown-menu" role="menu">
 				                    <a class="dropdown-item view_data" href="./?page=billings/view_billing&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-dark"></span> View</a>
 				                    <div class="dropdown-divider"></div>
+				                    <?php if(!empty($row['email'])): ?>
+				                    <a class="dropdown-item send_email" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>" data-email="<?php echo $row['email'] ?>"><span class="fa fa-envelope text-info"></span> Send Email</a>
+				                    <div class="dropdown-divider"></div>
+				                    <?php endif; ?>
 				                    <a class="dropdown-item print_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-print text-primary"></span> Print</a>
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item edit_data" href="./?page=billings/manage_billing&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
@@ -117,6 +129,19 @@
 	$(document).ready(function(){
 		$('.delete_data').click(function(){
 			_conf("Are you sure to delete this billing permanently?","delete_billing",[$(this).attr('data-id')])
+		})
+		
+		// Send email to individual client
+		$('.send_email').click(function(){
+			var billId = $(this).attr('data-id');
+			var email = $(this).attr('data-email');
+			
+			_conf("Send payment reminder email to " + email + "?", "send_email", [billId]);
+		})
+		
+		// Send email to all clients with overdue bills
+		$('#sendAllNotifications').click(function(){
+			_conf("Send payment reminder emails to all clients with overdue bills?", "send_all_emails");
 		})
 		
 		$('.print_data').click(function(){
@@ -300,6 +325,58 @@
 					location.reload();
 				}else{
 					alert_toast("An error occured.",'error');
+					end_loader();
+				}
+			}
+		})
+	}
+	
+	function send_email($id){
+		start_loader();
+		$.ajax({
+			url:_base_url_+"classes/MailNotification.php",
+			method:"POST",
+			data:{action: 'send_single', billing_id: $id},
+			dataType:"json",
+			error:err=>{
+				console.log(err)
+				alert_toast("An error occured while sending email.",'error');
+				end_loader();
+			},
+			success:function(resp){
+				if(typeof resp== 'object' && resp.status == 'success'){
+					alert_toast("Email sent successfully!",'success');
+					end_loader();
+				}else{
+					alert_toast(resp.message || "Failed to send email.",'error');
+					end_loader();
+				}
+			}
+		})
+	}
+	
+	function send_all_emails(){
+		start_loader();
+		$.ajax({
+			url:_base_url_+"classes/MailNotification.php",
+			method:"POST",
+			data:{action: 'send_all'},
+			dataType:"json",
+			error:err=>{
+				console.log(err)
+				alert_toast("An error occured while sending emails.",'error');
+				end_loader();
+			},
+			success:function(resp){
+				if(typeof resp== 'object' && resp.status == 'success'){
+					let message = `Successfully sent ${resp.sent} email(s).`;
+					if(resp.failed > 0) {
+						message += ` Failed to send ${resp.failed} email(s).`;
+					}
+					alert_toast(message, resp.failed > 0 ? 'warning' : 'success');
+					end_loader();
+				}else{
+					alert_toast("Failed to send emails.",'error');
 					end_loader();
 				}
 			}
