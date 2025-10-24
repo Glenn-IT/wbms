@@ -60,6 +60,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							<div class="form-group mb-3">
 								<label for="reading_date" class="control-label">Reading Date</label>
 								<input type="date" class="form-control form-control-sm rounded-0" id="reading_date" name="reading_date" required="required" max="<?= date("Y-m-d") ?>" value="<?= isset($reading_date) ? date("Y-m-d", strtotime($reading_date)) : '' ?>"/>
+								<small class="form-text text-muted">
+									<i class="fa fa-info-circle"></i> Due date will be automatically set to 1 month after reading date
+								</small>
 							</div>
 							<div class="form-group mb-3" style="display: none;">
 								<label for="previous" class="control-label">Previous Reading</label>
@@ -79,7 +82,10 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							</div>
 							<div class="form-group mb-3">
 								<label for="due_date" class="control-label">Due Date</label>
-								<input type="date" class="form-control form-control-sm rounded-0" id="due_date" name="due_date" required="required" value="<?= isset($due_date) ? date("Y-m-d", strtotime($due_date)) : '' ?>"/>
+								<input type="date" class="form-control form-control-sm rounded-0" id="due_date" name="due_date" required="required" readonly style="background-color: #e9ecef;" value="<?= isset($due_date) ? date("Y-m-d", strtotime($due_date)) : '' ?>"/>
+								<small class="form-text text-muted">
+									<i class="fa fa-info-circle"></i> Auto-calculated (1 month after reading date)
+								</small>
 							</div>
 							<div class="form-group">
 								<label for="status" class="control-label">Status</label>
@@ -114,6 +120,30 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			placeholder:"Please Select Here",
 			containerCssClass:'form-control form-control-sm rounded-0'
 		})
+		
+		// Auto-calculate due date when reading date changes
+		$('#reading_date').on('change', function(){
+			var readingDate = new Date($(this).val());
+			if(readingDate && !isNaN(readingDate.getTime())) {
+				// Add 1 month to reading date
+				var dueDate = new Date(readingDate);
+				dueDate.setMonth(dueDate.getMonth() + 1);
+				
+				// Format date as YYYY-MM-DD
+				var year = dueDate.getFullYear();
+				var month = String(dueDate.getMonth() + 1).padStart(2, '0');
+				var day = String(dueDate.getDate()).padStart(2, '0');
+				var formattedDate = year + '-' + month + '-' + day;
+				
+				$('#due_date').val(formattedDate);
+			}
+		});
+		
+		// Trigger the calculation on page load if reading_date has a value
+		if($('#reading_date').val()) {
+			$('#reading_date').trigger('change');
+		}
+		
 		$('#client_id').change(function(){
 			var id = $(this).val()
 			if(id <= 0)
