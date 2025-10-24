@@ -332,54 +332,72 @@
 	}
 	
 	function send_email($id){
-		start_loader();
-		$.ajax({
-			url:_base_url_+"classes/MailNotification.php",
-			method:"POST",
-			data:{action: 'send_single', billing_id: $id},
-			dataType:"json",
-			error:err=>{
-				console.log(err)
-				alert_toast("An error occured while sending email.",'error');
-				end_loader();
-			},
-			success:function(resp){
-				if(typeof resp== 'object' && resp.status == 'success'){
-					alert_toast("Email sent successfully!",'success');
+		$('#confirm_modal').modal('hide'); // Close confirmation modal
+		
+		// Remove backdrop and reset body
+		setTimeout(function(){
+			$('.modal-backdrop').remove();
+			$('body').removeClass('modal-open');
+			$('body').css('padding-right', '');
+			
+			start_loader();
+			$.ajax({
+				url:_base_url_+"classes/MailNotification.php",
+				method:"POST",
+				data:{action: 'send_single', billing_id: $id},
+				dataType:"json",
+				error:err=>{
+					console.log(err)
+					alert_toast("An error occured while sending email.",'error');
 					end_loader();
-				}else{
-					alert_toast(resp.message || "Failed to send email.",'error');
-					end_loader();
+				},
+				success:function(resp){
+					if(typeof resp== 'object' && resp.status == 'success'){
+						alert_toast("Email sent successfully!",'success');
+						end_loader();
+					}else{
+						alert_toast(resp.message || "Failed to send email.",'error');
+						end_loader();
+					}
 				}
-			}
-		})
+			})
+		}, 200);
 	}
 	
 	function send_all_emails(){
-		start_loader();
-		$.ajax({
-			url:_base_url_+"classes/MailNotification.php",
-			method:"POST",
-			data:{action: 'send_all'},
-			dataType:"json",
-			error:err=>{
-				console.log(err)
-				alert_toast("An error occured while sending emails.",'error');
-				end_loader();
-			},
-			success:function(resp){
-				if(typeof resp== 'object' && resp.status == 'success'){
-					let message = `Successfully sent ${resp.sent} email(s).`;
-					if(resp.failed > 0) {
-						message += ` Failed to send ${resp.failed} email(s).`;
+		$('#confirm_modal').modal('hide'); // Close confirmation modal
+		
+		// Remove backdrop and reset body
+		setTimeout(function(){
+			$('.modal-backdrop').remove();
+			$('body').removeClass('modal-open');
+			$('body').css('padding-right', '');
+			
+			start_loader();
+			$.ajax({
+				url:_base_url_+"classes/MailNotification.php",
+				method:"POST",
+				data:{action: 'send_all'},
+				dataType:"json",
+				error:err=>{
+					console.log(err)
+					alert_toast("An error occured while sending emails.",'error');
+					end_loader();
+				},
+				success:function(resp){
+					if(typeof resp== 'object' && resp.status == 'success'){
+						let message = `Successfully sent ${resp.sent} email(s).`;
+						if(resp.failed > 0) {
+							message += ` Failed to send ${resp.failed} email(s).`;
+						}
+						alert_toast(message, resp.failed > 0 ? 'warning' : 'success');
+						end_loader();
+					}else{
+						alert_toast("Failed to send emails.",'error');
+						end_loader();
 					}
-					alert_toast(message, resp.failed > 0 ? 'warning' : 'success');
-					end_loader();
-				}else{
-					alert_toast("Failed to send emails.",'error');
-					end_loader();
 				}
-			}
-		})
+			})
+		}, 200);
 	}
 </script>
