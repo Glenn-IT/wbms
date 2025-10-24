@@ -185,6 +185,31 @@ if (isset($_SESSION['type'], $_SESSION['message'])) {
   </div>
 </div>
 
+<!-- Lockout Modal -->
+<div class="modal fade" id="lockoutModal" tabindex="-1" aria-labelledby="lockoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="lockoutModalLabel">
+          <i class="bi bi-lock-fill"></i> Account Temporarily Locked
+        </h5>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-3">You have exceeded the maximum number of verification attempts.</p>
+        <p class="mb-3">Please wait <strong><span id="countdown">30</span> seconds</strong> before trying again.</p>
+        <div class="progress" style="height: 25px;">
+          <div id="lockoutProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" 
+               role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="lockoutCloseBtn" disabled>Close (30s)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </html>
 
 <script>
@@ -220,8 +245,19 @@ document.getElementById('verifySecurity').addEventListener('click', function () 
     .then(data => {
         if (data.status === 'success') {
             document.getElementById('passwordFields').style.display = 'block';
+            // Optionally disable verify button
+            document.getElementById('verifySecurity').disabled = true;
+            document.getElementById('verifySecurity').textContent = 'Verified ✓';
+        } else if (data.status === 'locked') {
+            // Show lockout modal with countdown
+            showLockoutModal(data.remaining_seconds);
         } else {
-            alert(data.message); // Show error message
+            // Show error with remaining attempts
+            let message = data.message;
+            if (data.attempts_remaining !== undefined) {
+                message += `\n\nAttempts remaining: ${data.attempts_remaining}`;
+            }
+            alert(message);
         }
     })
     .catch(error => {
@@ -229,6 +265,65 @@ document.getElementById('verifySecurity').addEventListener('click', function () 
         alert('Failed to verify. Please try again.');
     });
 });
+
+function showLockoutModal(seconds) {
+    const modal = new bootstrap.Modal(document.getElementById('lockoutModal'));
+    const countdownElement = document.getElementById('countdown');
+    const progressBar = document.getElementById('lockoutProgress');
+    const closeBtn = document.getElementById('lockoutCloseBtn');
+    
+    let remainingSeconds = seconds;
+    const totalSeconds = seconds;
+    
+    // Disable form inputs during lockout
+    document.getElementById('verifySecurity').disabled = true;
+    
+    // Update initial display
+    countdownElement.textContent = remainingSeconds;
+    closeBtn.textContent = `Close (${remainingSeconds}s)`;
+    
+    modal.show();
+    
+    // Countdown timer
+    const interval = setInterval(() => {
+        remainingSeconds--;
+        countdownElement.textContent = remainingSeconds;
+        closeBtn.textContent = `Close (${remainingSeconds}s)`;
+        
+        // Update progress bar
+        const percentage = (remainingSeconds / totalSeconds) * 100;
+        progressBar.style.width = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+        
+        if (remainingSeconds <= 0) {
+            clearInterval(interval);
+            closeBtn.disabled = false;
+            closeBtn.textContent = 'Close';
+            closeBtn.classList.remove('btn-secondary');
+            closeBtn.classList.add('btn-success');
+            
+            // Re-enable verify button
+            document.getElementById('verifySecurity').disabled = false;
+            
+            // Auto-close modal
+            setTimeout(() => {
+                modal.hide();
+            }, 1000);
+        }
+    }, 1000);
+    
+    // Handle manual close
+    document.getElementById('lockoutModal').addEventListener('hidden.bs.modal', function () {
+        clearInterval(interval);
+        // Reset for next time
+        countdownElement.textContent = '30';
+        progressBar.style.width = '100%';
+        closeBtn.disabled = true;
+        closeBtn.textContent = 'Close (30s)';
+        closeBtn.classList.remove('btn-success');
+        closeBtn.classList.add('btn-secondary');
+    });
+}
 </script>
 
 
