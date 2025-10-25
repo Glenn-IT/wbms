@@ -152,6 +152,23 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 
 	}
+	
+	function get_client_details(){
+		extract($_POST);
+		$qry = $this->conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', coalesce(middlename,'')) as `name` 
+								   FROM `client_list` 
+								   WHERE id = '{$id}' AND delete_flag = 0");
+		
+		if($qry->num_rows > 0){
+			$resp['status'] = 'success';
+			$resp['data'] = $qry->fetch_assoc();
+		}else{
+			$resp['status'] = 'failed';
+			$resp['msg'] = 'Client not found.';
+		}
+		return json_encode($resp);
+	}
+	
 	function get_previous_reading(){
 		extract($_POST);
 		
@@ -406,6 +423,9 @@ switch ($action) {
 	break;
 	case 'delete_client':
 		echo $Master->delete_client();
+	break;
+	case 'get_client_details':
+		echo $Master->get_client_details();
 	break;
 	case 'get_previous_reading':
 		echo $Master->get_previous_reading();
